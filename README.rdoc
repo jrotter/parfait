@@ -1,1 +1,12 @@
-# This is the readme for WebTester
+==== WebTester - README.rdoc
+
+WebTester is built to simplify the creation and maintenance of your automated browser test suite.
+
+Any automated test suite has two primary layers: 
+
+* A workflow layer on top, which dictates the user's path through the application.  
+* A control layer beneath, which defines the specific interactions between the user and the web page.  This control layer would be implmented in your favorite browser automation tool, e.g. Selenium, Watir, etc.
+
+WebTester provides a layer between the two, offering a set of basic test directives which are easy to call by the workflow layer and providing a simple infrastructure for creation and maintenance of the control layer beneath.  
+
+Let's start with a simple example.
