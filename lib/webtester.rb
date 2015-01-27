@@ -2,8 +2,21 @@ require 'watir-webdriver'
 require 'webtester/page'
 require 'webtester/control'
 
+# * Top level comment about WebTester
 module WebTester
 
+  # This is text internal to the WebTester Module
+  #
+  # ==== Attributes
+  #
+  # +id+ - the id of a thingie
+  # +counter+ - a counter that does something
+  #
+  # ==== Examples
+  #
+  #  # This is example code
+  #  WebTester.confirgure(:browser => mybrowser)
+  #  # This command does some awesome stuff
   PAGES = Hash.new
  
   def WebTester.configure(opts = {})

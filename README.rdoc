@@ -1,12 +1,116 @@
-==== WebTester - README.rdoc
+= WebTester
 
 WebTester is built to simplify the creation and maintenance of your automated browser test suite.
 
 Any automated test suite has two primary layers: 
 
-* A workflow layer on top, which dictates the user's path through the application.  
-* A control layer beneath, which defines the specific interactions between the user and the web page.  This control layer would be implmented in your favorite browser automation tool, e.g. Selenium, Watir, etc.
+* A workflow layer on top, which dictates the user's path through the application.  Think in terms of verbs and user stories: "As a user, when I login, I expect to be taken to my home page."  The workflow layer cares about user actions and results, not about the mechanics of entering data into the browser.
+* A control layer beneath, which defines the specific interactions between the user and the web page.  This control layer would be implmented in your favorite browser automation tool, e.g. Selenium, Watir, etc.  The control layer cares only about getting data into and out of specific fields on specific pages
 
 WebTester provides a layer between the two, offering a set of basic test directives which are easy to call by the workflow layer and providing a simple infrastructure for creation and maintenance of the control layer beneath.  
 
-Let's start with a simple example.
+At the control layer, WebTester allows you to define Controls and Pages.  
+
+==== Controls
+
+A Control is a single interaction point on a web page.  It can be a text field, a button, a pulldown menu, or something else more complicated.  Each Control has a set of directives associated with it, but the two primary directives are +get+ and +set+.
+
+- +get+ - determines the value of the control
+- +set+ - changes the Control to a new value.  
+
+Once +get+ and +set+ are defined, WebTester builds the following functions for free:
+
+- +retrieve+ - Same functionality as +get+.  Does not log anything.
+- +update+ - changes the value of the Control.  Logs the value of the Control both before and after the change for auditing purposes.
+- +confirm+ - tests the value of the Control, returning +true+ if the input matches the value of the Control and +false+ otherwise.
+- +verify+  = test the value of the Control, raising an exception if the input does not match the value of the Control.  Logs successes for auditing purposes.
+
+==== Pages
+
+A Page is a collection of Controls that are presented on the same screen.  This could be an actual page, or a panel on the screen.
+
+Controls that take navigational actions are defined to the Page scope as navigation elements.  The test application can invoke these as +navigate+ controls:
+
+- +navigate+ - move to a different part of the application
+
+== Getting Started
+
+=== Define a Page
+
+To get started with WebTester, first we have to define a Page.  As an example, let's define a page that creates or edits a blog post.  Note that we'll handle other setup (like requires) in the workflow code later.  We'll put the page information in file +pages/edit_post.rb+.
+
+  # Define the page - we'll use an alias since this is used to both add and edit
+  edit_blog = WebTester.add_page(
+    :name => "Edit Post",
+    :aliases => ["New Post"])
+
+Next, we're going to define the navigation elements on the page.  On this page, the options are "Submit" and "Cancel" buttons.  Note that we're using Watir under the covers as we code the control layer.
+
+  edit_blog.add_navigation { |opts|
+    case opts[:to]
+
+    when "Submit"
+      WebTester.browser.button(:id => "submit").when_present.click
+
+    when "Cancel"
+      WebTester.browser.button(:id => "cancel").when_present.click
+
+    else
+      raise "Navigate called with an invalid destination \"#{o[:to]}\""
+    end
+  }
+
+Now we need to add the basic controls on the page for entering a subject and a body.
+
+  # Add the blog subject control to the Edit Blog page
+  subject = edit_blog.add_control(
+    :label => :subject,
+    :text => "blog subject")
+    
+  subject.add_set{ |value|
+    WebTester::browser().text_field(:id => "subject").when_present.set value
+  }
+  
+  subject.add_get{ |opts|
+    WebTester::browser.text_field(:id => "subject").when_present.value
+  }
+  
+  # Add the blog body control to the Edit Blog page
+  body = edit_blog.add_control(
+    :label => :body,
+    :text => "blog body")
+    
+  body.add_set{ |value|
+    WebTester::browser().text_field(:id => "body").when_present.set value
+  }
+  
+  body.add_get{ |opts|
+    WebTester::browser.text_field(:id => "body").when_present.value
+  }
+
+That's all we need to define the Edit Blog page.  With +get+ and +set+ defined for each Control, WebTester will build +retrieve+, +update+, +confirm+, and +verify+ under the covers and these directives can all be invoked from the workflow layer.
+
+=== Invoke the Workflow
+
+To define the workflow layer, let's edit +scripts/edit_blog.rb+.  First we need to require the appropriate gems and start Watir up.
+
+  require 'watir-webdriver'
+  require 'webtester'
+  
+  browser = Watir::Browser.new
+  browser.goto 'http://mysite.com/blog/new'
+  
+Next we'll invoke WebTester to fill in the fields and submit.
+
+  WebTester.update(:onpage => "New Blog", :subject => "This is my subject")
+  WebTester.update(:onpage => "New Blog", :body => "This is my body")
+  WebTester.navigate(:onpage => "New Blog", :to => "Submit")
+
+Then we can edit the page, verify that our data was correctly populated, and Cancel out:
+
+  WebTester.navigate(:to => "Edit Post")
+  WebTester.verify(:onpage => "New Blog", :subject => "This is my subject")
+  WebTester.verify(:onpage => "New Blog", :body => "This is my body")
+  WebTester.navigate(:onpage => "New Blog", :to => "Cancel")
+ 
+
