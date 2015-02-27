@@ -113,4 +113,5 @@ Then we can edit the page, verify that our data was correctly populated, and Can
   WebTester.verify(:onpage => "New Blog", :body => "This is my body")
   WebTester.navigate(:onpage => "New Blog", :to => "Cancel")
  
+More to come...
 
