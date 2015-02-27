@@ -1,0 +1,4 @@
+This is the FAQ
+
+Does WebTester play nice with threads?
+
