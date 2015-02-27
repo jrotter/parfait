@@ -1,39 +1,42 @@
 = WebTester
+== What is WebTester?
 
 WebTester is built to simplify the creation and maintenance of your automated browser test suite.
 
 Any automated test suite has two primary layers: 
 
-* A workflow layer on top, which dictates the user's path through the application.  Think in terms of verbs and user stories: "As a user, when I login, I expect to be taken to my home page."  The workflow layer cares about user actions and results, not about the mechanics of entering data into the browser.
-* A control layer beneath, which defines the specific interactions between the user and the web page.  This control layer would be implmented in your favorite browser automation tool, e.g. Selenium, Watir, etc.  The control layer cares only about getting data into and out of specific fields on specific pages
+* A <b>workflow layer</b> on top, which dictates the user's path through the application.  Think in terms of verbs and user stories: "As a user, when I login, I expect to be taken to my home page."  The workflow layer cares about user actions and results, not about the mechanics of entering data into the browser.
+* A <b>control layer</b> beneath, which defines the specific interactions between the user and the web page.  This control layer would be implmented in your favorite browser automation tool, e.g. Selenium, Watir, etc.  The control layer cares only about getting data into and out of specific fields on specific pages.
 
 WebTester provides a layer between the two, offering a set of basic test directives which are easy to call by the workflow layer and providing a simple infrastructure for creation and maintenance of the control layer beneath.  
+
+== How does WebTester work?
 
 At the control layer, WebTester allows you to define Controls and Pages.  
 
 ==== Controls
 
-A Control is a single interaction point on a web page.  It can be a text field, a button, a pulldown menu, or something else more complicated.  Each Control has a set of directives associated with it, but the two primary directives are +get+ and +set+.
+A Control is a single interaction point on a web page.  It can be a text field, a button, a pulldown menu, or something else more complicated.  Each Control has a set of directives associated with it, based off of the two primary directives +get+ and +set+:
 
-- +get+ - determines the value of the control
-- +set+ - changes the Control to a new value.  
+- +get+ - reads and returns the current value from the Control
+- +set+ - uses the Control to set a new value.  
 
-Once +get+ and +set+ are defined, WebTester builds the following functions for free:
+Once these primary directives are defined, WebTester puts them together to build the following directives for free:
 
-- +retrieve+ - Same functionality as +get+.  Does not log anything.
-- +update+ - changes the value of the Control.  Logs the value of the Control both before and after the change for auditing purposes.
-- +confirm+ - tests the value of the Control, returning +true+ if the input matches the value of the Control and +false+ otherwise.
-- +verify+  = test the value of the Control, raising an exception if the input does not match the value of the Control.  Logs successes for auditing purposes.
+- +retrieve+ - Reads and returns the current value from the Control.  Does not log anything.  (This is the user-callable version of +get+.)
+- +update+ - Uses the Control to set a new value.  Logs the value of the Control both before and after the change for auditing purposes.
+- +confirm+ - Tests the value of the Control, returning +true+ if the input matches the value of the Control and +false+ otherwise.  Does not log anything.
+- +verify+  = Test the value of the Control, raising an exception if the input does not match the value of the Control.  Returns +true+ otherwise.  Logs successes for auditing purposes.
 
 ==== Pages
 
 A Page is a collection of Controls that are presented on the same screen.  This could be an actual page, or a panel on the screen.
 
-Controls that take navigational actions are defined to the Page scope as navigation elements.  The test application can invoke these as +navigate+ controls:
+Controls that take navigational actions are defined to the Page scope as navigation elements.  The test application can invoke these as +navigate+ Controls:
 
 - +navigate+ - move to a different part of the application
 
-== Getting Started
+== How do I get started with WebTester?
 
 === Define a Page
 
