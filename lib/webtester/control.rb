@@ -80,17 +80,19 @@ module WebTester
       @confirm_method = block
     end
  
- 
+
+    # Depends on get, retrieve, set 
     def add_generic_update()
       add_update { |opts|
+        # $$$ Add a check here to ensure that opts[@label] matches something
         new_value = opts[@label]
-        found_value = retrieve_old(opts)
+        found_value = retrieve(opts)
         if new_value == found_value
           capital_text = @text
           capital_text[0] = capital_text[0].capitalize
-          Logger::write("#{capital_text} is already set to \"#{new_value}\"")
+          WebTester.log("#{capital_text} is already set to \"#{new_value}\"")
         else
-          Logger::write("Entering #{@text}: \"#{new_value}\" (was \"#{found_value}\")")
+          WebTester.log("Entering #{@text}: \"#{new_value}\" (was \"#{found_value}\")")
           set(new_value)
         end
       }
@@ -101,25 +103,29 @@ module WebTester
         get(opts)
       }
     end
-  
+ 
+    # Depends on get, retrieve 
     def add_generic_verify()
       add_verify { |opts|
+        # $$$ Add a check here to ensure that opts[@label] matches something
         value = opts[@label]
-        found_value = retrieve_old()
+        found_value = retrieve()
         if value == found_value
-          Logger::write("Verified #{@text} to be \"#{value}\"")
+          WebTester.log("Verified #{@text} to be \"#{value}\"")
         else
-          puts Atom::stripped_page()
-          raise TestcaseException, "Expected #{@text} to be \"#{value}\", but found \"#{found_value}\" instead"
+          raise "Expected #{@text} to be \"#{value}\", but found \"#{found_value}\" instead"
         end
+        true
       }    
     end
   
+    # Depends on get, retrieve 
     def add_generic_confirm()
-      add_verify { |opts|
+      add_confirm { |opts|
         retval = false
+        # $$$ Add a check here to ensure that opts[@label] matches something
         value = opts[@label]
-        found_value = retrieve_old()
+        found_value = retrieve()
         if value == found_value
           retval = true
         end

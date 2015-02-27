@@ -15,13 +15,13 @@ module WebTester
   # ==== Examples
   #
   #  # This is example code
-  #  WebTester.confirgure(:browser => mybrowser)
+  #  WebTester.configure(:browser => mybrowser)
   #  # This command does some awesome stuff
   PAGES = Hash.new
  
   def WebTester.configure(opts = {})
     o = {
-      :browser => nil
+      :browser => nil,
     }.merge(opts)
  
     if o[:browser].is_a?(Watir::Browser)
@@ -30,7 +30,7 @@ module WebTester
       raise "WebTester browser parameter must be a Watir Browser object"
     end
   end
-  
+
 
   def WebTester.browser()
     #If the browser is non-nil, then it passed validation in the configure method
@@ -41,6 +41,16 @@ module WebTester
   end
 
   
+  def WebTester.set_logroutine(&block)
+    Thread.current[:webtester_logroutine] = block
+  end 
+
+ 
+  def WebTester.log(opts = {})
+    return Thread.current[:webtester_logroutine].call(opts)
+  end
+
+
   def WebTester.add_page(opts = {})
     o = {
       :name => :notspecified,
@@ -135,18 +145,20 @@ module WebTester
     end
 
     # Find the specified control and invoke its update method
+    retval = nil
     action_taken = false
     page = WebTester::get_page(o[:onpage])
     opts.each { |label,value|
       control = page.get_control(label)
       unless control == nil
-        control.update(opts)
+        retval = control.update(opts)
         action_taken = true
       end
     }  
     unless action_taken
       raise "No valid control was passed to WebTester::update"
     end
+    retval
   end
     
   
@@ -163,7 +175,7 @@ module WebTester
 
     if opts.size == 1 #If no other parameters were passed, run the page test
       if page.page_test()
-        Logger::write("Verified that browser is on page \"#{page.name}\"",:style => :h2)
+        WebTester.log("Verified that browser is on page \"#{page.name}\"",:style => :h2)
       else
         raise  "WebTester expected browser to be on page #{page.name}, but it wasn\'t"
       end
@@ -181,6 +193,7 @@ module WebTester
         raise "No valid control was passed to WebTester::verify"
       end  
     end  
+    true
   end
 
   
@@ -195,6 +208,7 @@ module WebTester
 
     page = WebTester::get_page(o[:onpage])
 
+    retval = false
     if opts.size == 1 #If no other parameters were passed, run the page test
       return page.page_test()
     else
@@ -203,11 +217,13 @@ module WebTester
       opts.each { |label,value|
         control = page.get_control(label)
         unless control == nil
-          control.confirm(opts)
+          retval = control.confirm(opts)
           action_taken = true
         end
       }  
-      unless action_taken
+      if action_taken
+        return retval
+      else
         raise "No valid control was passed to WebTester::confirm"
       end  
     end

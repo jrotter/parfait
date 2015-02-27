@@ -22,10 +22,10 @@ module WebTester
       get_method = o[:get_method]
 
       if label == :notspecified
-        raise TestcaseException,"Label must be specified when adding a control"
+        raise "Label must be specified when adding a control"
       end
       if text == :notspecified
-        raise TestcaseException,"Text must be specified when adding a control"
+        raise "Text must be specified when adding a control"
       end
     
       my_control = WebTester::Control.new(
