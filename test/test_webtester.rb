@@ -15,7 +15,6 @@ module WebTester
 end
 
 
-#class WebTesterTest < Test::Unit::TestCase
 class WebTesterTest < Minitest::Test
 
   #
