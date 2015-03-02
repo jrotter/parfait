@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'webtester'
+require 'web_tester'
 
 module Watir
   class Browser
@@ -22,7 +22,7 @@ class WebTesterTest < Minitest::Test
   #WebTester.browser()
   #
   def test_no_browser
-    Thread.current[:webtester_browser] = nil
+    Thread.current[:web_tester_browser] = nil
     assert_raises(RuntimeError) { WebTester.browser }
     assert_raises(RuntimeError) { WebTester.configure }
     assert_raises(RuntimeError) { WebTester.browser }
@@ -32,7 +32,7 @@ class WebTesterTest < Minitest::Test
     b = "baloney"
     assert_raises(RuntimeError) { WebTester.configure(:browser => b) }
     assert_raises(RuntimeError) { 
-      Thread.current[:webtester_browser] = nil 
+      Thread.current[:web_tester_browser] = nil 
       WebTester.browser 
     }
   end
@@ -86,7 +86,7 @@ class WebTesterTest < Minitest::Test
   #WebTester.retrieve(opts = {})
   #WebTester.confirm(opts = {})
   #
-  def test_webtester_verb_nopage
+  def test_web_tester_verb_nopage
     assert_raises(RuntimeError) { page = WebTester.set(:foo => "Hello") }
     assert_raises(RuntimeError) { page = WebTester.update(:foo => "Hello") }
     assert_raises(RuntimeError) { page = WebTester.navigate(:to => "Other Page") }
@@ -95,7 +95,7 @@ class WebTesterTest < Minitest::Test
     assert_raises(RuntimeError) { page = WebTester.confirm(:foo => "Hello") }
   end
  
-  def test_webtester_verb_badpage
+  def test_web_tester_verb_badpage
     assert_raises(RuntimeError) { page = WebTester.set(:onpage => "Page Does Not Exist", :foo => "Hello") }
     assert_raises(RuntimeError) { page = WebTester.update(:onpage => "Page Does Not Exist", :foo => "Hello") }
     assert_raises(RuntimeError) { page = WebTester.navigate(:onpage => "Page Does Not Exist", :to => "Other Page") }
@@ -104,7 +104,7 @@ class WebTesterTest < Minitest::Test
     assert_raises(RuntimeError) { page = WebTester.confirm(:onpage => "Page Does Not Exist", :foo => "Hello") }
   end
  
-  def test_webtester_verb_invalid_control
+  def test_web_tester_verb_invalid_control
     WebTester.add_page(:name => "Invalid Control Page")
     assert_raises(RuntimeError) { page = WebTester.set(:onpage => "Invalid Control Page", :foo => "Hello") }
     assert_raises(RuntimeError) { page = WebTester.update(:onpage => "Invalid Control Page", :foo => "Hello") }
@@ -113,7 +113,7 @@ class WebTesterTest < Minitest::Test
     assert_raises(RuntimeError) { page = WebTester.confirm(:onpage => "Invalid Control Page", :foo => "Hello") }
   end
  
-  def test_webtester_navigate_requirements
+  def test_web_tester_navigate_requirements
     #Right now, I use "All Pages" as the page when no page is specified.  I should
     #  formalize this a bit more.  Either I can default all verbs to use some default
     #  space when onpage is not specified or I should use something other than the string
@@ -181,7 +181,7 @@ class WebTesterTest < Minitest::Test
 
   end
  
-  def test_webtester_update_generic
+  def test_web_tester_update_generic
     WebTester.set_logroutine { |logtext| nil } #don't log during test suite
     page = WebTester.add_page(:name => "page_003")
     control = page.add_control(:label => :control_003, :text => "control_003")
@@ -193,7 +193,7 @@ class WebTesterTest < Minitest::Test
     assert_equal control.retrieve(), nil
 
     # Add data via WebTester.update
-    @testval = "test_webtester_update_generic"
+    @testval = "test_web_tester_update_generic"
     assert_equal  WebTester.update(:onpage => "page_003", :control_003 => @testval), @testval
     assert_equal  control.get(:data => :control_003), @testval
     assert_equal  control.retrieve(:data => :control_003), @testval
