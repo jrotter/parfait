@@ -98,7 +98,7 @@ That's all we need to define the Edit Blog page.  With +get+ and +set+ defined f
 To define the workflow layer, let's edit +scripts/edit_blog.rb+.  First we need to require the appropriate gems and start Watir up.
 
   require 'watir-webdriver'
-  require 'webtester'
+  require 'web_tester'
   
   browser = Watir::Browser.new
   browser.goto 'http://mysite.com/blog/new'
