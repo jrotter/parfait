@@ -1,5 +1,5 @@
 require 'watir-webdriver'
-require 'web_tester'
+require 'parfait'
 
 browser = Watir::Browser.new
 browser.goto 'http://staging.eirenerx.com/login'

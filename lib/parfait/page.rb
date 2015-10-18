@@ -1,4 +1,4 @@
-module WebTester
+module Parfait
 
   class Page
   
@@ -47,7 +47,7 @@ module WebTester
         raise "Text must be specified when adding a control"
       end
     
-      my_control = WebTester::Control.new(
+      my_control = Parfait::Control.new(
         :label => label,
         :text => text,
         :page_name => @name,

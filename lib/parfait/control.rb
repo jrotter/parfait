@@ -1,4 +1,4 @@
-module WebTester
+module Parfait
 
   class Control
   
@@ -228,9 +228,9 @@ module WebTester
         if new_value == found_value
           capital_text = @text
           capital_text[0] = capital_text[0].capitalize
-          WebTester.log("#{capital_text} is already set to \"#{new_value}\"")
+          Parfait.log("#{capital_text} is already set to \"#{new_value}\"")
         else
-          WebTester.log("Entering #{@text}: \"#{new_value}\" (was \"#{found_value}\")")
+          Parfait.log("Entering #{@text}: \"#{new_value}\" (was \"#{found_value}\")")
           set(new_value)
         end
       }
@@ -270,7 +270,7 @@ module WebTester
         value = opts[@label]
         found_value = retrieve()
         if value == found_value
-          WebTester.log("Verified #{@text} to be \"#{value}\"")
+          Parfait.log("Verified #{@text} to be \"#{value}\"")
         else
           raise "Expected #{@text} to be \"#{value}\", but found \"#{found_value}\" instead"
         end

@@ -1,18 +1,18 @@
-= WebTester
-== What is WebTester?
+= Parfait
+== What is Parfait?
 
-WebTester is built to simplify the creation and maintenance of your automated browser test suite.
+Parfait is built to simplify the creation and maintenance of your automated browser test suite.
 
 Any automated test suite has two primary layers: 
 
 * A <b>workflow layer</b> on top, which dictates the user's path through the application.  Think in terms of verbs and user stories: "As a user, when I login, I expect to be taken to my home page."  The workflow layer cares about user actions and results, not about the mechanics of entering data into the browser.
 * A <b>control layer</b> beneath, which defines the specific interactions between the user and the web page.  This control layer would be implmented in your favorite browser automation tool, e.g. Selenium, Watir, etc.  The control layer cares only about getting data into and out of specific fields on specific pages.
 
-WebTester provides a layer between the two, offering a set of basic test directives which are easy to call by the workflow layer and providing a simple infrastructure for creation and maintenance of the control layer beneath.  
+Parfait provides a layer between the two, offering a set of basic test directives which are easy to call by the workflow layer and providing a simple infrastructure for creation and maintenance of the control layer beneath.  
 
-== How does WebTester work?
+== How does Parfait work?
 
-At the control layer, WebTester allows you to define Controls and Pages.  
+At the control layer, Parfait allows you to define Controls and Pages.  
 
 ==== Controls
 
@@ -21,7 +21,7 @@ A Control is a single interaction point on a web page.  It can be a text field, 
 - +get+ - reads and returns the current value from the Control
 - +set+ - uses the Control to set a new value.  
 
-Once these primary directives are defined, WebTester puts them together to build the following directives for free:
+Once these primary directives are defined, Parfait puts them together to build the following directives for free:
 
 - +retrieve+ - Reads and returns the current value from the Control.  Does not log anything.  (This is the user-callable version of +get+.)
 - +update+ - Uses the Control to set a new value.  Logs the value of the Control both before and after the change for auditing purposes.
@@ -36,14 +36,14 @@ Controls that take navigational actions are defined to the Page scope as navigat
 
 - +navigate+ - move to a different part of the application
 
-== How do I get started with WebTester?
+== How do I get started with Parfait?
 
 === Define a Page
 
-To get started with WebTester, first we have to define a Page.  As an example, let's define a page that creates or edits a blog post.  Note that we'll handle other setup (like requires) in the workflow code later.  We'll put the page information in file +pages/edit_post.rb+.
+To get started with Parfait, first we have to define a Page.  As an example, let's define a page that creates or edits a blog post.  Note that we'll handle other setup (like requires) in the workflow code later.  We'll put the page information in file +pages/edit_post.rb+.
 
   # Define the page - we'll use an alias since this is used to both add and edit
-  edit_blog = WebTester.add_page(
+  edit_blog = Parfait.add_page(
     :name => "Edit Post",
     :aliases => ["New Post"])
 
@@ -53,10 +53,10 @@ Next, we're going to define the navigation elements on the page.  On this page, 
     case opts[:to]
 
     when "Submit"
-      WebTester.browser.button(:id => "submit").when_present.click
+      Parfait.browser.button(:id => "submit").when_present.click
 
     when "Cancel"
-      WebTester.browser.button(:id => "cancel").when_present.click
+      Parfait.browser.button(:id => "cancel").when_present.click
 
     else
       raise "Navigate called with an invalid destination \"#{o[:to]}\""
@@ -71,11 +71,11 @@ Now we need to add the basic controls on the page for entering a subject and a b
     :text => "blog subject")
     
   subject.add_set{ |value|
-    WebTester::browser().text_field(:id => "subject").when_present.set value
+    Parfait::browser().text_field(:id => "subject").when_present.set value
   }
   
   subject.add_get{ |opts|
-    WebTester::browser.text_field(:id => "subject").when_present.value
+    Parfait::browser.text_field(:id => "subject").when_present.value
   }
   
   # Add the blog body control to the Edit Blog page
@@ -84,37 +84,37 @@ Now we need to add the basic controls on the page for entering a subject and a b
     :text => "blog body")
     
   body.add_set{ |value|
-    WebTester::browser().text_field(:id => "body").when_present.set value
+    Parfait::browser().text_field(:id => "body").when_present.set value
   }
   
   body.add_get{ |opts|
-    WebTester::browser.text_field(:id => "body").when_present.value
+    Parfait::browser.text_field(:id => "body").when_present.value
   }
 
-That's all we need to define the Edit Blog page.  With +get+ and +set+ defined for each Control, WebTester will build +retrieve+, +update+, +confirm+, and +verify+ under the covers and these directives can all be invoked from the workflow layer.
+That's all we need to define the Edit Blog page.  With +get+ and +set+ defined for each Control, Parfait will build +retrieve+, +update+, +confirm+, and +verify+ under the covers and these directives can all be invoked from the workflow layer.
 
 === Invoke the Workflow
 
 To define the workflow layer, let's edit +scripts/edit_blog.rb+.  First we need to require the appropriate gems and start Watir up.
 
   require 'watir-webdriver'
-  require 'web_tester'
+  require 'parfait'
   
   browser = Watir::Browser.new
   browser.goto 'http://mysite.com/blog/new'
   
-Next we'll invoke WebTester to fill in the fields and submit.
+Next we'll invoke Parfait to fill in the fields and submit.
 
-  WebTester.update(:onpage => "New Blog", :subject => "This is my subject")
-  WebTester.update(:onpage => "New Blog", :body => "This is my body")
-  WebTester.navigate(:onpage => "New Blog", :to => "Submit")
+  Parfait.update(:onpage => "New Blog", :subject => "This is my subject")
+  Parfait.update(:onpage => "New Blog", :body => "This is my body")
+  Parfait.navigate(:onpage => "New Blog", :to => "Submit")
 
 Then we can edit the page, verify that our data was correctly populated, and Cancel out:
 
-  WebTester.navigate(:to => "Edit Post")
-  WebTester.verify(:onpage => "New Blog", :subject => "This is my subject")
-  WebTester.verify(:onpage => "New Blog", :body => "This is my body")
-  WebTester.navigate(:onpage => "New Blog", :to => "Cancel")
+  Parfait.navigate(:to => "Edit Post")
+  Parfait.verify(:onpage => "New Blog", :subject => "This is my subject")
+  Parfait.verify(:onpage => "New Blog", :body => "This is my body")
+  Parfait.navigate(:onpage => "New Blog", :to => "Cancel")
  
 More to come...
 
