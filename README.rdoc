@@ -1,12 +1,12 @@
 = Parfait
 == What is Parfait?
 
-Parfait is built to simplify the creation and maintenance of your automated browser test suite.
+Parfait uses layers to simplify the creation and maintenance of your automated browser test suite.  
 
-Any automated test suite has two primary layers: 
+A typical automated test suite can be broken down into layers:
 
 * A <b>workflow layer</b> on top, which dictates the user's path through the application.  Think in terms of verbs and user stories: "As a user, when I login, I expect to be taken to my home page."  The workflow layer cares about user actions and results, not about the mechanics of entering data into the browser.
-* A <b>control layer</b> beneath, which defines the specific interactions between the user and the web page.  This control layer would be implmented in your favorite browser automation tool, e.g. Selenium, Watir, etc.  The control layer cares only about getting data into and out of specific fields on specific pages.
+* A <b>control layer</b> beneath, which defines the specific interactions between the user and the web page.  This control layer would be implemented in your favorite browser automation tool, e.g. Selenium, Watir, etc.  The control layer cares only about getting data into and out of specific fields on specific pages.
 
 Parfait provides a layer between the two, offering a set of basic test directives which are easy to call by the workflow layer and providing a simple infrastructure for creation and maintenance of the control layer beneath.  
 
@@ -35,6 +35,8 @@ A Page is a collection of Controls that are presented on the same screen.  This 
 Controls that take navigational actions are defined to the Page scope as navigation elements.  The test application can invoke these as +navigate+ Controls:
 
 - +navigate+ - move to a different part of the application
+
+Additionally, Regions can be defined on the page.  A Region is a subset of the page, targeted with specific data (for instance, a single entry in a list of names).  I'm still figuring out how Regions will work, so there's more to come in that space.
 
 == How do I get started with Parfait?
 
