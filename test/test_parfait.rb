@@ -18,32 +18,44 @@ end
 class ParfaitTest < Minitest::Test
 
   #
-  #Parfait.configure(opts = {})
+  #Parfait::Application.new(opts = {})
+  #Parfait.set_browser()
   #Parfait.browser()
   #
-  def test_no_browser
-    Thread.current[:parfait_browser] = nil
-    assert_raises(RuntimeError) { Parfait.browser }
-    assert_raises(RuntimeError) { Parfait.configure }
-    assert_raises(RuntimeError) { Parfait.browser }
-  end
+  def test_application
+    # No browser
+    myapp = Parfait::Application.new(:name => "a")
+    assert myapp.is_a? Parfait::Application
+    myapp.set_browser(nil)
+    assert myapp.is_a? Parfait::Application
 
-  def test_configure_browser_bad
-    b = "baloney"
-    assert_raises(RuntimeError) { Parfait.configure(:browser => b) }
+    # Bad browser
+    n = "not a browser"
     assert_raises(RuntimeError) { 
-      Thread.current[:parfait_browser] = nil 
-      Parfait.browser 
+      myapp = Parfait::Application.new(:name => "a",:browser => n)
     }
+    myapp = Parfait::Application.new(:name => "a")
+    assert_raises(RuntimeError) { 
+      myapp.set_browser(n)
+    }
+
+    # No name
+    b = Watir::Browser.new
+    assert_raises(RuntimeError) { 
+      myapp = Parfait::Application.new(:browser => b)
+    }
+
+    # browser method
+    b = Watir::Browser.new
+    myapp = Parfait::Application.new(:name => "a", :browser => b)
+    assert myapp.browser == b
+    Thread.current[:parfait_browser] = nil
+    assert_raises(RuntimeError) { myapp.browser }
+    myapp = Parfait::Application.new(:name => "a", :browser => b)
+    myapp.set_browser(b)
+    assert myapp.browser == b
   end
 
-  def test_configure_browser_good
-    b = Watir::Browser.new
-    assert Parfait.configure(:browser => b)
-    returned_browser = nil
-    assert returned_browser = Parfait.browser
-    assert returned_browser.is_a?(Watir::Browser)
-  end
 
   #
   #Parfait.add_page(opts = {})

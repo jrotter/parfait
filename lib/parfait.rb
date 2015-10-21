@@ -1,4 +1,5 @@
 require 'watir-webdriver'
+require 'parfait/application'
 require 'parfait/page'
 require 'parfait/control'
 
@@ -13,52 +14,6 @@ module Parfait
   PAGES = Hash.new
 
 
-  # Configure Parfait settings
-  #
-  # *Options*
-  #
-  # Takes a hash as input where the current options are:
-  # - +:browser+ specifies the browser object used in the current thread.  Storing this value will allow the browser object to be retrieved via +Parfait.browser+ invocation when defining +get+ and +set+ routines for controls.
-  #
-  # *Example*
-  #
-  #   mybrowser = Watir::Browser.new()
-  #   Parfait.configure(:browser => mybrowser)
-  def Parfait.configure(opts = {})
-    o = {
-      :browser => nil,
-    }.merge(opts)
- 
-    if o[:browser].is_a?(Watir::Browser)
-      Thread.current[:parfait_browser] = o[:browser]
-    else
-      raise "Parfait browser parameter must be a Watir Browser object"
-    end
-  end
-
-
-  # Get the browser object used by the current thread.  
-  #
-  # This will be particularly useful when defining directives for a Parfait::Control.
-  #
-  # *Options*
-  #
-  # none
-  #
-  # *Example*
-  #
-  #   mycontrol.add_get{ |opts|
-  #     Parfait::browser.text_field(:id => "body").when_present.value
-  #   }
-  def Parfait.browser()
-    #If the browser is non-nil, then it passed validation in the configure method
-    unless Thread.current[:parfait_browser]
-      raise "Parfait: browser requested, but it is undefined"
-    end
-    Thread.current[:parfait_browser]
-  end
-
-  
   # Configure the logging routine to be used by Parfait
   #
   # The routine you store here can be invoked by Parfait.log

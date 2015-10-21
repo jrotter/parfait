@@ -31,14 +31,10 @@ module Parfait
     def add_control(opts = {})
       o = {
         :label => :notspecified,
-        :text => :notspecified,
-        :set_method => :notspecified,
-        :get_method => :notspecified
+        :text => :notspecified
       }.merge(opts)
       label = o[:label]
       text = o[:text]
-      set_method = o[:set_method]
-      get_method = o[:get_method]
 
       if label == :notspecified
         raise "Label must be specified when adding a control"
@@ -50,9 +46,7 @@ module Parfait
       my_control = Parfait::Control.new(
         :label => label,
         :text => text,
-        :page_name => @name,
-        :set_method => set_method,
-        :get_method => get_method)
+        :page_name => @name)
       
       @controls[label] = my_control
       return my_control

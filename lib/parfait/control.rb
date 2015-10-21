@@ -2,22 +2,23 @@ module Parfait
 
   class Control
   
-    # Method description
+    # Create a new control object
     #
     # *Options*
     #
-    # +option+:: specifies something
+    # +label+:: the label used to identify this control
+    # +text+:: the text to be used when referring to this control in logs
     #
     # *Example*
     #
-    #   $$$ Need an example $$$
+    #   newcontrol = Parfait::Control.new(
+    #     :label => :user_id,
+    #     :text = "user ID"
+    #   )
     def initialize(opts = {})
     o = {
         :label => :notspecified,
-        :text => :notspecified,
-        :page_name => :notspecified,
-        :set_method => :notspecified,
-        :get_method => :notspecified
+        :text => :notspecified
       }.merge(opts)
       @label = o[:label]
       @text = o[:text]
