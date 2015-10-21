@@ -1,11 +1,21 @@
 require 'watir-webdriver'
-require 'parfait'
 
 browser = Watir::Browser.new
-browser.goto 'http://staging.eirenerx.com/login'
+browser.goto 'xxxx'
 
 # Login 
-browser.text_field(:name => 'userid').when_present.set 'MUPrescriberman'
-browser.text_field(:name => 'password').when_present.set 'Testmd678'
-browser.button(:name => 'submit').when_present.click
-browser.
+browser.text_field(:id => 'user_username').when_present.set 'xxxx'
+browser.text_field(:id => 'user_password').when_present.set 'xxxx'
+browser.button(:id => 'user_submit').when_present.click
+
+# New Message
+browser.link(:text => "New Message").when_present.click
+browser.text_field(:id => "message_subject").when_present.set "This is my subject"
+browser.text_field(:id => "message_body").when_present.set "This is my body"
+browser.checkbox(:id => "message_recipients_all_pharmacists").when_present.set
+browser.button(:id => "message_submit").when_present.click
+
+# Logout
+browser.link(:text => "Log-out").when_present.click
+
+
