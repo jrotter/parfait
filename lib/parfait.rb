@@ -337,4 +337,23 @@ module Parfait
   end
 
 
+  # Get the current browser object (for the current thread) from Parfait.
+  #
+  # Note that inside regions, this may be a Selenium object and not the
+  # selenium browser pointer (i.e. a subset of the page instead of the
+  # whole page)
+  #
+  # *Options*
+  #
+  # none
+  #
+  # *Example*
+  #
+  #   Parfait::browser
+  #
+  def Parfait.browser()
+    Thread.current[:parfait_region]
+  end
+
+
 end

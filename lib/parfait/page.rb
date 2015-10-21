@@ -1,55 +1,81 @@
 module Parfait
 
   class Page
+
+    attr_reader :name,
+      :aliases
   
-    # Method description
+    # Create a Parfait page
     #
     # *Options*
     #
-    # +option+:: specifies something
+    # +name+:: specifies the name of the page
+    # +aliases+:: specifies an array of aliases for the page
     #
     # *Example*
     #
-    #   $$$ Need an example $$$
-    def initialize(name)
-      @name = name
+    #   Parfait::Page.new(
+    #     :name => "Prescription New", 
+    #     :aliases => ["New Prescription", "New Rx", "Rx New"]
+    #   )
+    #
+    def initialize(opts = {})
+      o = {
+        :name => nil,
+        :aliases => []
+      }.merge(opts)
+
+      @name = o[:name]
+      raise "Parfait::Page requires a name to be defined" unless @name
+      raise "Parfait::Page requires name to be a string" unless @name.is_a?(String)
+
+      @aliases = o[:aliases]
+      if @aliases
+        raise "Parfait::Page requires aliases to be an array" unless @aliases.is_a?(Array)
+        @aliases.each do |my_alias|
+          raise "Parfait::Page requires each alias in the array to be a string" unless my_alias.is_a?(String)
+        end
+      end
+      
       @controls = Hash.new
+      @regions = Hash.new
       @page_test = nil
-      @navigate_method = nil
     end
 
   
-    # Method description
+    # Add a Control to the current Page
     #
     # *Options*
     #
-    # +option+:: specifies something
+    # +control+:: specifies the Control object to be added
     #
     # *Example*
     #
-    #   $$$ Need an example $$$
-    def add_control(opts = {})
-      o = {
-        :label => :notspecified,
-        :text => :notspecified
-      }.merge(opts)
-      label = o[:label]
-      text = o[:text]
+    #   page = Parfait::Page.new(
+    #     :name => "Prescription New", 
+    #     :aliases => ["New Prescription", "New Rx", "Rx New"]
+    #   )
+    #   control = Parfait::Control.new(
+    #     :name => "Prescriber Name",
+    #     :text = "prescriber full name"
+    #   )
+    #   page.add_control(control)
+    #
+    def add_control(control)
 
-      if label == :notspecified
-        raise "Label must be specified when adding a control"
+      if control
+        if control.is_a?(Parfait::Control)
+          @controls[control.name] = control
+          control.aliases.each do |my_alias|
+            @controls[my_alias] = control
+          end
+        else
+          raise "Control must be a Parfait::Control when being adding to a Page"
+        end
+      else
+        raise "Control must be specified when adding a Control to an Page"
       end
-      if text == :notspecified
-        raise "Text must be specified when adding a control"
-      end
-    
-      my_control = Parfait::Control.new(
-        :label => label,
-        :text => text,
-        :page_name => @name)
-      
-      @controls[label] = my_control
-      return my_control
+      self
     end
 
   
@@ -109,17 +135,28 @@ module Parfait
     end
 
   
-    # Method description
+    # Retrieve a Control object by name or alias.
+    #
+    # Under the covers, if there is an existence directive defined for this
+    # control, it will be run on the current browser to confirm that it is
+    # indeed present.
     #
     # *Options*
     #
-    # +option+:: specifies something
+    # +name+:: specifies the name or alias of the control
     #
     # *Example*
     #
-    #   $$$ Need an example $$$
-    def get_control(label)
-      return @controls[label]
+    #   mypage.control("User ID")
+    def control(requested_name)
+      control = @controls[requested_name] 
+      if control
+        # Confirm that the requested control is present
+
+        return control
+      else
+        raise "Invalid control name requested: \"#{requested_name}\""
+      end
     end
     
   end

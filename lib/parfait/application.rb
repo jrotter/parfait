@@ -6,15 +6,15 @@ module Parfait
     #
     # *Options*
     #
-  # Takes a hash as input where the current options are:
+    # Takes a hash as input where the current options are:
     # +name+:: specifies the name of the application
     # - +:browser+ optionally specifies the browser object used in the current thread.  Storing this value will allow the browser object to be retrieved via +Parfait.browser+ invocation when defining +get+ and +set+ routines for controls.
     #
     # *Example*
     #
     #   mybrowser = Watir::Browser.new()
-    #   Parfatit::Application.new(
-    #     :name => "Facebook",
+    #   Parfait::Application.new(
+    #     :name => "Blog",
     #     :browser => mybrowser
     #   )
     #
@@ -75,55 +75,59 @@ module Parfait
     end
 
   
-    # Method description
+    # Add a page to this Application
     #
     # *Options*
     #
-    # +option+:: specifies something
+    # +page+:: specifies a Parfait::Page object
     #
     # *Example*
     #
-    #   $$$ Need an example $$$
-    def add_page(opts = {})
-      o = {
-        :label => :notspecified,
-        :text => :notspecified,
-      }.merge(opts)
-      label = o[:label]
-      text = o[:text]
+    #   blog_posts = Parfait::Page.new(:name => "Blog Posts")
+    #   blogapp.add_page(blog_posts)
+    #
+    def add_page(page)
 
-      if label == :notspecified
-        raise "Label must be specified when adding a control"
-      end
-      if text == :notspecified
-        raise "Text must be specified when adding a control"
+      if page
+        if page.is_a?(Parfait::Page)
+          @pages[page.name] = page
+          page.aliases.each do |my_alias|
+            @pages[my_alias] = page
+          end
+        else
+          raise "Page must be a Parfait::Page when being adding to an application"
+        end
+      else
+        raise "Page must be specified when adding a page to an application"
       end
     
-      my_page = Parfait::Page.new(
-        :label => label,
-        :text => text,
-        :page_name => @name)
-      
-      @pages[label] = my_page
-      return my_page
     end
 
 
-    # Retrieve a page object by label
+    # Retrieve a page object by name or alias.
+    #
+    # Under the covers, if there is an existence directive defined for this
+    # page, it will be run on the current browser to confirm that we are 
+    # indeed on it.
     #
     # *Options*
     #
-    # +name+:: specifies the label of the page
+    # +name+:: specifies the name or alias of the page
     #
     # *Example*
     #
-    #   myapp.page(:user_new)
-    def page(label)
-      page_name = @pages[label] 
-      if page_name
-        return page_name
+    #   myapp.page("Login Page")
+    def page(requested_name)
+      page = @pages[requested_name] 
+      if page
+        # Confirm that we are on the requested page
+
+        # Pass the browser through to any subsequently called methods
+        Thread.current[:parfait_region] = Thread.current[:parfait_browser]
+
+        return page
       else
-        raise "Invalid page label requested: \"#{page_name}\""
+        raise "Invalid page name requested: \"#{requested_name}\""
       end
     end
       
