@@ -12,11 +12,29 @@ Parfait provides a layer between the two, offering a set of basic test directive
 
 == How does Parfait work?
 
-At the control layer, Parfait allows you to define Controls and Pages.  
+At the control layer, Parfait allows you to define four basic objects: Applications, Pages, Regions, and Controls.
 
-==== Controls
+=== Applications
 
-A Control is a single interaction point on a web page.  It can be a text field, a button, a pulldown menu, or something else more complicated.  Each Control has a set of directives associated with it, based off of the two primary directives +get+ and +set+:
+An Application is the top layer of the Parfait object hierarchy.  It is simply a collection of Pages.
+
+=== Pages
+
+A Page is a collection of Controls and Regions that are presented on the same screen.  This could be an actual page, or a panel on the screen that is used throughout the application.
+
+=== Regions
+
+A Region is a specific section on the screen.  Parfait does not require Regions to be defined, but they can be helpful when there are multiple similar controls on the screen, like in a list.
+
+A Region can contain Controls or other Regions.
+
+=== Controls
+
+A Control is a single interaction point on a web page.  There can be data controls like links, text fields, and pulldown menus, as well as non-data controls like links and buttons.  All controls have a set of directives associated with them to enable easier implementation of your test automation.
+
+==== Data Controls
+
+Each data control is built around the two primary directives +get+ and +set+:
 
 - +get+ - reads and returns the current value from the Control
 - +set+ - uses the Control to set a new value.  
@@ -28,26 +46,37 @@ Once these primary directives are defined, Parfait puts them together to build t
 - +confirm+ - Tests the value of the Control, returning +true+ if the input matches the value of the Control and +false+ otherwise.  Does not log anything.
 - +verify+  = Test the value of the Control, raising an exception if the input does not match the value of the Control.  Returns +true+ otherwise.  Logs successes for auditing purposes.
 
-==== Pages
+==== Non-Data Controls
 
-A Page is a collection of Controls that are presented on the same screen.  This could be an actual page, or a panel on the screen.
+Each non-data control is built upon a single +goto+ directive:
 
-Controls that take navigational actions are defined to the Page scope as navigation elements.  The test application can invoke these as +navigate+ Controls:
+- +goto+ - selects or clicks the control to navigate elsewhere in the application
 
-- +navigate+ - move to a different part of the application
+From this directive, a secondary +navigate+ directive is built:
 
-Additionally, Regions can be defined on the page.  A Region is a subset of the page, targeted with specific data (for instance, a single entry in a list of names).  I'm still figuring out how Regions will work, so there's more to come in that space.
+- +navigate+ - uses the Control to navigate.  Logs its action.  (This is the user-callable version of +goto+.)
 
 == How do I get started with Parfait?
 
+=== Define an Application
+
+To get started with Parfait, first we have to define an Application.  As an example, let's work with a ficticious blogging application.
+
+  # Define the application
+  blogger = Parfait::Application.new(:name => "Blogger")
+
 === Define a Page
 
-To get started with Parfait, first we have to define a Page.  As an example, let's define a page that creates or edits a blog post.  Note that we'll handle other setup (like requires) in the workflow code later.  We'll put the page information in file +pages/edit_post.rb+.
+Next, let's define a Page.  As an example, let's define a page that creates or edits a blog post.  Note that we'll handle other setup (like requires) in the workflow code later.  We'll put the page information in file +pages/edit_post.rb+.
 
-  # Define the page - we'll use an alias since this is used to both add and edit
-  edit_blog = Parfait.add_page(
+  # Define the page - we'll use an alias since this is used to 
+  #   both add and edit
+  edit_blog = Parfait::Page.new(
     :name => "Edit Post",
-    :aliases => ["New Post"])
+    :aliases => ["New Post"]
+  )
+
+=== Add some Controls
 
 Next, we're going to define the navigation elements on the page.  On this page, the options are "Submit" and "Cancel" buttons.  Note that we're using Watir under the covers as we code the control layer.
 

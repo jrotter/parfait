@@ -35,6 +35,8 @@ module Parfait
       @retrieve_method = nil
       @verify_method = nil
       @confirm_method = nil
+      @goto_method = nil
+      @navigate_method = nil
 
       if @name
         unless @name.is_a?(String)
@@ -154,6 +156,34 @@ module Parfait
     # *Example*
     #
     #   $$$ Need an example $$$
+    def goto(opts = {})
+      return @goto_method.call(opts)
+    end
+
+  
+    # Method description
+    #
+    # *Options*
+    #
+    # +option+:: specifies something
+    #
+    # *Example*
+    #
+    #   $$$ Need an example $$$
+    def navigate(opts = {})
+      return @navigate_method.call(opts)
+    end
+
+  
+    # Method description
+    #
+    # *Options*
+    #
+    # +option+:: specifies something
+    #
+    # *Example*
+    #
+    #   $$$ Need an example $$$
     def add_get(&block)
       @get_method = block
   
@@ -239,6 +269,35 @@ module Parfait
       @confirm_method = block
     end
  
+
+    # Method description
+    #
+    # *Options*
+    #
+    # +option+:: specifies something
+    #
+    # *Example*
+    #
+    #   $$$ Need an example $$$
+    def add_goto(&block)
+      @goto_method = block
+      add_generic_navigate()
+    end
+
+  
+    # Method description
+    #
+    # *Options*
+    #
+    # +option+:: specifies something
+    #
+    # *Example*
+    #
+    #   $$$ Need an example $$$
+    def add_navigate(&block)
+      @navigate_method = block
+    end
+
 
     # Method description
     #
@@ -328,6 +387,26 @@ module Parfait
         retval
       }        
     end
+ 
+ 
+    # Method description
+    #
+    # Depends on goto
+    #
+    # *Options*
+    #
+    # +option+:: specifies something
+    #
+    # *Example*
+    #
+    #   $$$ Need an example $$$
+    def add_generic_navigate()
+      add_navigate { |opts|
+        Parfait.log("Navigating to #{@logtext}")
+        goto(opts)
+      }
+    end
+
   
   end
 
