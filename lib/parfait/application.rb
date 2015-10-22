@@ -91,8 +91,10 @@ module Parfait
       if page
         if page.is_a?(Parfait::Page)
           @pages[page.name] = page
-          page.aliases.each do |my_alias|
-            @pages[my_alias] = page
+          if page.aliases
+            page.aliases.each do |my_alias|
+              @pages[my_alias] = page
+            end
           end
         else
           raise "Page must be a Parfait::Page when being adding to an application"

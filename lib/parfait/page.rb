@@ -57,7 +57,7 @@ module Parfait
     #   )
     #   control = Parfait::Control.new(
     #     :name => "Prescriber Name",
-    #     :text = "prescriber full name"
+    #     :text => "prescriber full name"
     #   )
     #   page.add_control(control)
     #
@@ -66,8 +66,10 @@ module Parfait
       if control
         if control.is_a?(Parfait::Control)
           @controls[control.name] = control
-          control.aliases.each do |my_alias|
-            @controls[my_alias] = control
+          if control.aliases
+            control.aliases.each do |my_alias|
+              @controls[my_alias] = control
+            end
           end
         else
           raise "Control must be a Parfait::Control when being adding to a Page"

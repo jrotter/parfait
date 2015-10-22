@@ -28,6 +28,7 @@ module Parfait
       @name = o[:name]
       @aliases = o[:aliases]
       @logtext = o[:logtext]
+
       @set_method = nil
       @get_method = nil
       @update_method = nil
@@ -83,8 +84,8 @@ module Parfait
     # *Example*
     #
     #   $$$ Need an example $$$
-    def set(opts = {})
-      @set_method.call(opts)
+    def set(value,opts = {})
+      @set_method.call(value,opts)
     end
 
   
@@ -111,8 +112,8 @@ module Parfait
     # *Example*
     #
     #   $$$ Need an example $$$
-    def update(opts = {})
-      @update_method.call(opts)
+    def update(value,opts = {})
+      @update_method.call(value,opts)
     end
 
   
@@ -125,8 +126,8 @@ module Parfait
     # *Example*
     #
     #   $$$ Need an example $$$
-    def confirm(opts = {})
-      return @confirm_method.call(opts)
+    def confirm(value,opts = {})
+      return @confirm_method.call(value,opts)
     end
 
   
@@ -139,8 +140,8 @@ module Parfait
     # *Example*
     #
     #   $$$ Need an example $$$
-    def verify(opts = {})
-      @verify_method.call(opts)
+    def verify(value,opts = {})
+      @verify_method.call(value,opts)
     end
  
  
@@ -251,17 +252,16 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def add_generic_update()
-      add_update { |opts|
-        # $$$ Add a check here to ensure that opts[@label] matches something
-        new_value = opts[@label]
-        found_value = retrieve(opts)
+      add_update { |value,opts|
+        new_value = value
+        found_value = retrieve()
         if new_value == found_value
           capital_text = @logtext
           capital_text[0] = capital_text[0].capitalize
           Parfait.log("#{capital_text} is already set to \"#{new_value}\"")
         else
           Parfait.log("Entering #{@logtext}: \"#{new_value}\" (was \"#{found_value}\")")
-          set(new_value)
+          set(new_value,opts)
         end
       }
     end
@@ -277,8 +277,8 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def add_generic_retrieve()
-      add_retrieve { |opts|
-        get(opts)
+      add_retrieve { 
+        get()
       }
     end
 
@@ -295,9 +295,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def add_generic_verify()
-      add_verify { |opts|
-        # $$$ Add a check here to ensure that opts[@label] matches something
-        value = opts[@label]
+      add_verify { |value,opts|
         found_value = retrieve()
         if value == found_value
           Parfait.log("Verified #{@logtext} to be \"#{value}\"")
@@ -321,10 +319,8 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def add_generic_confirm()
-      add_confirm { |opts|
+      add_confirm { |value,opts|
         retval = false
-        # $$$ Add a check here to ensure that opts[@label] matches something
-        value = opts[@label]
         found_value = retrieve()
         if value == found_value
           retval = true

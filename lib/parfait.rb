@@ -45,7 +45,7 @@ module Parfait
   #
   #   Parfait.log("Everything is fine - no bugs here.",:style => fatal_error)
   def Parfait.log(string,opts = {})
-    return Thread.current[:parfait_logroutine].call(opts)
+    return Thread.current[:parfait_logroutine].call(string,opts)
   end
 
 
@@ -337,7 +337,23 @@ module Parfait
   end
 
 
-  # Get the current browser object (for the current thread) from Parfait.
+  # Set the browser object (for the current thread) for Parfait to use
+  #
+  # *Options*
+  #
+  # +browser+:: specifies the browser to store
+  #
+  # *Example*
+  #
+  #   Parfait::set_browser(browser)
+  #
+  def Parfait.set_browser(browser)
+    Thread.current[:parfait_browser] = browser
+    Thread.current[:parfait_region] = browser
+  end
+
+
+  # Get the current browser object (for the current thread) from Parfait
   #
   # Note that inside regions, this may be a Selenium object and not the
   # selenium browser pointer (i.e. a subset of the page instead of the
