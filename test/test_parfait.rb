@@ -167,53 +167,36 @@ class ParfaitTest < Minitest::Test
   end
 
 
+  def test_parfait_generic_directives_input
+    Parfait::set_logroutine { |string| }
+    @val = nil
+    c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
+    c1.add_set { |value| @val = value }
+    c1.add_get { @val }
+    c1.set "cat"
+    assert c1.get == "cat"
+    assert c1.retrieve == "cat"
+    assert c1.confirm "cat"
+    c1.verify "cat"
+    assert_raises(RuntimeError) { c1.verify "tiger" }
+    assert @val == "cat"
 
-  #
-  #Parfait.set(opts = {})
-  #Parfait.update(opts = {})
-  #Parfait.navigate(opts = {})
-  #Parfait.verify(opts = {})
-  #Parfait.retrieve(opts = {})
-  #Parfait.confirm(opts = {})
-  #
-  def test_parfait_verb_nopage
-    #assert_raises(RuntimeError) { page = Parfait.set(:foo => "Hello") }
-    #assert_raises(RuntimeError) { page = Parfait.update(:foo => "Hello") }
-    #assert_raises(RuntimeError) { page = Parfait.navigate(:to => "Other Page") }
-    #assert_raises(RuntimeError) { page = Parfait.verify(:foo => "Hello") }
-    #assert_raises(RuntimeError) { page = Parfait.retrieve(:data => :foo) }
-    #assert_raises(RuntimeError) { page = Parfait.confirm(:foo => "Hello") }
+    c1.update "dog"
+    assert c1.get == "dog"
+    assert c1.retrieve == "dog"
+    assert c1.confirm "dog"
+    c1.verify "dog"
+    assert_raises(RuntimeError) { c1.verify "dingo" }
+    assert @val == "dog"
   end
  
-  def test_parfait_verb_badpage
-    #assert_raises(RuntimeError) { page = Parfait.set(:onpage => "Page Does Not Exist", :foo => "Hello") }
-    #assert_raises(RuntimeError) { page = Parfait.update(:onpage => "Page Does Not Exist", :foo => "Hello") }
-    #assert_raises(RuntimeError) { page = Parfait.navigate(:onpage => "Page Does Not Exist", :to => "Other Page") }
-    #assert_raises(RuntimeError) { page = Parfait.verify(:onpage => "Page Does Not Exist", :foo => "Hello") }
-    #assert_raises(RuntimeError) { page = Parfait.retrieve(:onpage => "Page Does Not Exist", :data => :foo) }
-    #assert_raises(RuntimeError) { page = Parfait.confirm(:onpage => "Page Does Not Exist", :foo => "Hello") }
+  def test_parfait_custom_directives_input
   end
  
-  def test_parfait_verb_invalid_control
-    #Parfait.add_page(:name => "Invalid Control Page")
-    #assert_raises(RuntimeError) { page = Parfait.set(:onpage => "Invalid Control Page", :foo => "Hello") }
-    #assert_raises(RuntimeError) { page = Parfait.update(:onpage => "Invalid Control Page", :foo => "Hello") }
-    #assert_raises(RuntimeError) { page = Parfait.verify(:onpage => "Invalid Control Page", :foo => "Hello") }
-    #assert_raises(RuntimeError) { page = Parfait.retrieve(:onpage => "Invalid Control Page", :data => :foo) }
-    #assert_raises(RuntimeError) { page = Parfait.confirm(:onpage => "Invalid Control Page", :foo => "Hello") }
+  def test_parfait_generic_directives_noninput
   end
  
-  def test_parfait_navigate_requirements
-    #Right now, I use "All Pages" as the page when no page is specified.  I should
-    #  formalize this a bit more.  Either I can default all verbs to use some default
-    #  space when onpage is not specified or I should use something other than the string
-    #  "All Pages".  Just clean it up a bit.
-    #assert_raises(RuntimeError) do
-    #  page = Parfait.navigate(:onpage => "Invalid Control Page", :to => "Some Other Page")
-    #end
-    #assert_raises(RuntimeError) do
-    #  page = Parfait.navigate(:onpage => "Invalid Control Page", :to => "Some Other Page")
-    #end
+  def test_parfait_custom_directives_noninput
   end
  
   def test_control_set_generic
