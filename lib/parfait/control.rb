@@ -11,7 +11,7 @@ module Parfait
     #
     # +name+:: the name used to identify this control
     # +logtext+:: the text to be used when referring to this control in logs
-    # +aliases+:: specifies an array of aliases for the page
+    # +aliases+:: specifies an array of aliases for the control
     #
     # *Example*
     #
@@ -77,11 +77,11 @@ module Parfait
     end
 
   
-    # Method description
+    # Set the value for this control
     #
     # *Options*
     #
-    # +option+:: specifies something
+    # +value+:: specifies the value that this control will be set to
     #
     # *Example*
     #
