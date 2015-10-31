@@ -43,6 +43,66 @@ module Parfait
     end
 
   
+    # Add a Region to the current Page
+    #
+    # *Options*
+    #
+    # +region+:: specifies the Region object to be added
+    #
+    # *Example*
+    #
+    #   myregion = Parfait::Region.new(
+    #     :name => "User List"
+    #   )
+    #   page.add_region(myregion)
+    #
+    def add_region(region)
+
+      if region
+        if region.is_a?(Parfait::Region)
+          @regions[region.name] = region
+          if region.aliases
+            region.aliases.each do |my_alias|
+              @regions[my_alias] = region
+            end
+          end
+        else
+          raise "Region must be a Parfait::Region when being added to a Page"
+        end
+      else
+        raise "Region must be specified when adding a Region to a Page"
+      end
+      self
+    end
+
+  
+    # Retrieve a Region object by name or alias.
+    #
+    # Under the covers, if there is an existence directive defined for this
+    # region, it will be run on the current browser to confirm that it is
+    # indeed present.
+    #
+    # *Options*
+    #
+    # +name+:: specifies the name or alias of the region
+    #
+    # *Example*
+    #
+    #   myregion.region("User List" => username)
+    #
+    def region(opts = {})
+      region = @regions[opts.first[0]] 
+      if region
+        # Apply the filter method
+        region.filter_method.call(first[1])
+
+        return region
+      else
+        raise "Invalid region name requested: \"#{requested_name}\""
+      end
+    end
+    
+
     # Add a Control to the current Page
     #
     # *Options*

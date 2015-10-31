@@ -7,7 +7,11 @@ Gem::Specification.new do |s|
   s.add_development_dependency "minitest", [">= 0"]
   s.authors     = ["Jeremy Rotter"]
   s.email       = 'jeremy.rotter@gmail.com'
-  s.files       = ['lib/parfait.rb','lib/parfait/application.rb','lib/parfait/page.rb','lib/parfait/control.rb']
+  s.files       = ['lib/parfait.rb',
+                   'lib/parfait/application.rb',
+                   'lib/parfait/page.rb',
+                   'lib/parfait/region.rb',
+                   'lib/parfait/control.rb']
   s.homepage    = ''
   s.license     = 'MIT'
 end
