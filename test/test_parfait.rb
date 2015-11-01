@@ -168,7 +168,7 @@ class ParfaitTest < Minitest::Test
 
 
   def test_parfait_generic_directives_input
-    Parfait::set_logroutine { |string| }
+    Parfait::set_logroutine { |string| } # no need to log anything
     @val = nil
     c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
     c1.add_set { |value| @val = value }
@@ -191,95 +191,45 @@ class ParfaitTest < Minitest::Test
   end
  
   def test_parfait_custom_directives_input
+    Parfait::set_logroutine { |string| } # no need to log anything
+    @val = nil
+    c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
+    c1.add_update { |value| "chicken" }
+    c1.add_retrieve { "duck" }
+    c1.add_verify { |value| "goose" }
+    c1.add_confirm { |value| "moose" }
+    c1.add_set { |value| @val = value }
+    c1.add_get { @val }
+    c1.set "cat"
+    assert c1.get == "cat"
+    assert c1.update("something") == "chicken"
+    assert c1.update("anything") == "chicken"
+    assert c1.retrieve == "duck"
+    assert c1.verify("something") == "goose"
+    assert c1.verify("anything") == "goose"
+    assert c1.confirm("something") == "moose"
+    assert c1.confirm("anything") == "moose"
+    assert @val == "cat"
   end
  
   def test_parfait_generic_directives_noninput
+    Parfait::set_logroutine { |string| } # no need to log anything
+    @val = nil
+    c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
+    c1.add_goto { "eureka" }
+    assert c1.goto == "eureka"
+    assert c1.navigate == "eureka"
   end
  
   def test_parfait_custom_directives_noninput
+    Parfait::set_logroutine { |string| } # no need to log anything
+    @val = nil
+    c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
+    c1.add_navigate { "squirrel" }
+    c1.add_goto { "chipmonk" }
+    assert c1.navigate == "squirrel"
+    assert c1.goto == "chipmonk"
   end
  
-  def test_control_set_generic
-    #Parfait.set_logroutine { |logtext| nil } #don't log during test suite
-    #page = Parfait.add_page(:name => "page_001")
-    #control = page.add_control(:label => :control_001, :text => "control_001")
-    #@myvalue = nil
-    #control.add_get { |opts| @myvalue }
-    #control.add_set { |value| @myvalue = value }
-
-    #assert_equal control.get(), nil
-    #assert_equal control.retrieve(), nil
-#
-    # Add data via control.set
-    #@testval = "test_control_set_generic"
-    #assert_equal  control.set(@testval), @testval
-    #assert_equal  control.get(:data => :control_001), @testval
-    #assert_equal  control.retrieve(:data => :control_001), @testval
-    #assert        control.confirm(:control_001 => @testval)
-    #assert_equal  control.confirm(:control_001 => "wrong"), false
-    #assert        control.verify(:control_001 => @testval)
-    #assert_raises (RuntimeError) { control.verify(:control_001 => "wrong") }
-    #assert_equal  Parfait.retrieve(:onpage => "page_001", :data => :control_001), @testval
-    #assert        Parfait.confirm(:onpage => "page_001", :control_001 => @testval)
-    #assert_equal  Parfait.confirm(:onpage => "page_001", :control_001 => "wrong"), false
-    #assert        Parfait.verify(:onpage => "page_001", :control_001 => @testval)
-    #assert_raises (RuntimeError) { Parfait.verify(:onpage => "page_001", :control_001 => "wrong") }
-  end
- 
-  def test_control_update_generic
-    #Parfait.set_logroutine { |logtext| nil } #don't log during test suite
-    #page = Parfait.add_page(:name => "page_002")
-    #control = page.add_control(:label => :control_002, :text => "control_002")
-    #@myvalue = nil
-    #control.add_get { |opts| @myvalue }
-    #control.add_set { |value| @myvalue = value }
-
-    #assert_equal control.get(), nil
-    #assert_equal control.retrieve(), nil
-
-    # Add data via control.update
-    #@testval = "test_control_update_generic"
-    #assert_equal  control.update(:control_002 => @testval), @testval
-    #assert_equal  control.get(:data => :control_002), @testval
-    #assert_equal  control.retrieve(:data => :control_002), @testval
-    #assert        control.confirm(:control_002 => @testval)
-    #assert_equal  control.confirm(:control_002 => "wrong"), false
-    #assert        control.verify(:control_002 => @testval)
-    #assert_raises (RuntimeError) { control.verify(:control_002 => "wrong") }
-    #assert_equal  Parfait.retrieve(:onpage => "page_002", :data => :control_002), @testval
-    #assert        Parfait.confirm(:onpage => "page_002", :control_002 => @testval)
-    #assert_equal  Parfait.confirm(:onpage => "page_002", :control_002 => "wrong"), false
-    #assert        Parfait.verify(:onpage => "page_002", :control_002 => @testval)
-    #assert_raises (RuntimeError) { Parfait.verify(:onpage => "page_002", :control_002 => "wrong") }
-
-  end
- 
-  def test_parfait_update_generic
-    #Parfait.set_logroutine { |logtext| nil } #don't log during test suite
-    #page = Parfait.add_page(:name => "page_003")
-    #control = page.add_control(:label => :control_003, :text => "control_003")
-    #@myvalue = nil
-    #control.add_get { |opts| @myvalue }
-    #control.add_set { |value| @myvalue = value }
-
-    #assert_equal control.get(), nil
-    #assert_equal control.retrieve(), nil
-
-    ## Add data via Parfait.update
-    #@testval = "test_parfait_update_generic"
-    #assert_equal  Parfait.update(:onpage => "page_003", :control_003 => @testval), @testval
-    #assert_equal  control.get(:data => :control_003), @testval
-    #assert_equal  control.retrieve(:data => :control_003), @testval
-    #assert        control.confirm(:control_003 => @testval)
-    #assert_equal  control.confirm(:control_003 => "wrong"), false
-    #assert        control.verify(:control_003 => @testval)
-    #assert_raises (RuntimeError) { control.verify(:control_003 => "wrong") }
-    #assert_equal  Parfait.retrieve(:onpage => "page_003", :data => :control_003), @testval
-    #assert        Parfait.confirm(:onpage => "page_003", :control_003 => @testval)
-    #assert_equal  Parfait.confirm(:onpage => "page_003", :control_003 => "wrong"), false
-    #assert        Parfait.verify(:onpage => "page_003", :control_003 => @testval)
-    #assert_raises (RuntimeError) { Parfait.verify(:onpage => "page_003", :control_003 => "wrong") }
-
-  end
  
 end
