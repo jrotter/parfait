@@ -187,11 +187,11 @@ module Parfait
     def add_get(&block)
       @get_method = block
   
-      add_generic_retrieve()
-      add_generic_confirm()
-      add_generic_verify()
+      add_generic_retrieve() unless @retrieve_method
+      add_generic_confirm() unless @confirm_method
+      add_generic_verify() unless @verify_method
       if @set_method != nil
-        add_generic_update
+        add_generic_update unless @update_method
       end 
     end
 
@@ -209,7 +209,7 @@ module Parfait
       @set_method = block
     
       if @get_method != nil
-        add_generic_update()
+        add_generic_update() unless @update_method
       end 
     end
 
@@ -281,7 +281,7 @@ module Parfait
     #   $$$ Need an example $$$
     def add_goto(&block)
       @goto_method = block
-      add_generic_navigate()
+      add_generic_navigate() unless @navigate_method
     end
 
   
