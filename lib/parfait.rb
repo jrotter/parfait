@@ -1,6 +1,7 @@
 require 'watir-webdriver'
 require 'parfait/application'
 require 'parfait/page'
+require 'parfait/region'
 require 'parfait/control'
 
 # [cat]  something

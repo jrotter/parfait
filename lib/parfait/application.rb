@@ -102,7 +102,7 @@ module Parfait
       else
         raise "Page must be specified when adding a page to an application"
       end
-    
+      self
     end
 
 

@@ -50,6 +50,7 @@ module Parfait
       @name = o[:name]
       @aliases = o[:aliases]
       @controls = Hash.new
+      @regions = Hash.new
       @pages = Hash.new
 
       if @name
@@ -117,6 +118,21 @@ module Parfait
     end
 
   
+    # Call the filter for this region
+    #
+    # *Options*
+    #
+    # +param+:: specifies the parameter to use when applying the filter for this region
+    #
+    # *Example*
+    #
+    #   region.filter("patches.ohoulihan")
+    #
+    def filter(param)
+       @filter_method.call(param)
+    end
+
+  
     # Add a Region to the current Region
     #
     # *Options*
@@ -172,11 +188,11 @@ module Parfait
       region = @regions[opts.first[0]] 
       if region
         # Apply the filter method
-        region.filter_method.call(first[1])
+        region.filter(opts.first[1])
 
         return region
       else
-        raise "Invalid region name requested: \"#{requested_name}\""
+        raise "Invalid region name requested: \"#{opts.first[0]}\""
       end
     end
     

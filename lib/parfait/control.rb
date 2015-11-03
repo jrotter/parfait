@@ -47,10 +47,10 @@ module Parfait
       end
       if @logtext
         unless @logtext.is_a?(String)
-          raise "Text must be a String when adding a control"
+          raise "Logtext must be a String when adding a control"
         end
       else
-        raise "Text must be specified when adding a control" 
+        raise "Logtext must be specified when adding a control" 
       end
       if @aliases
         unless @aliases.is_a?(Array)
