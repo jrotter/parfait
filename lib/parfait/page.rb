@@ -94,7 +94,7 @@ module Parfait
       region = @regions[opts.first[0]] 
       if region
         # Apply the filter method
-        region.filter_method.call(first[1])
+        region.filter(opts.first[1])
 
         return region
       else

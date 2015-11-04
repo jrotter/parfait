@@ -144,7 +144,7 @@ class ParfaitTest < Minitest::Test
     }
   end
 
-  def test_add_control
+  def test_add_control_to_page
     p = Parfait::Page.new(:name => "page")
     c = Parfait::Control.new(:name => "c",:logtext => "d")
     assert p.add_control(c).is_a?(Parfait::Page)
@@ -153,7 +153,7 @@ class ParfaitTest < Minitest::Test
     assert p.add_control(c).is_a?(Parfait::Page)
   end
 
-  def test_get_control
+  def test_get_control_from_page
     p = Parfait::Page.new(:name => "page")
     c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
     c2 = Parfait::Control.new(:name => "c2",:logtext => "control two",:aliases => ["cdeux","cdos","c++"])
@@ -166,6 +166,95 @@ class ParfaitTest < Minitest::Test
     assert_raises(RuntimeError) { p.control("c3") }
   end
 
+  def test_add_control_to_region
+    r = Parfait::Region.new(:name => "region")
+    c = Parfait::Control.new(:name => "c",:logtext => "d")
+    assert r.add_control(c).is_a?(Parfait::Region)
+
+    c = Parfait::Control.new(:name => "c",:logtext => "d",:aliases => ["x","y"])
+    assert r.add_control(c).is_a?(Parfait::Region)
+  end
+
+  def test_get_control_from_region
+    r = Parfait::Region.new(:name => "region")
+    c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
+    c2 = Parfait::Control.new(:name => "c2",:logtext => "control two",:aliases => ["cdeux","cdos","c++"])
+    assert r.add_control(c1).add_control(c2).is_a?(Parfait::Region)
+    assert r.control("c1") == c1
+    assert r.control("c2") == c2
+    assert r.control("cdeux") == c2
+    assert r.control("cdos") == c2
+    assert r.control("c++") == c2
+    assert_raises(RuntimeError) { r.control("c3") }
+  end
+
+  def test_add_region_to_region
+    parent = Parfait::Region.new(:name => "parent")
+    child = Parfait::Region.new(:name => "child")
+    assert parent.add_region(child).is_a?(Parfait::Region)
+
+    child = Parfait::Region.new(:name => "child",:aliases => ["x","y"])
+    assert parent.add_region(child).is_a?(Parfait::Region)
+  end
+
+  def test_get_region_from_region
+    parent = Parfait::Region.new(:name => "parent")
+    child1 = Parfait::Region.new(:name => "child1")
+    child1.add_filter { |a,b| a }
+    child2 = Parfait::Region.new(:name => "child2",:aliases => ["x","y","z"])
+    child2.add_filter { |a,b| a }
+    assert parent.add_region(child1).add_region(child2).is_a?(Parfait::Region)
+    assert parent.region("child1" => "foo") == child1
+    assert parent.region("child2" => "foo") == child2
+    assert parent.region("x" => "foo") == child2
+    assert parent.region("y" => "foo") == child2
+    assert parent.region("z" => "foo") == child2
+    assert_raises(RuntimeError) { parent.region("notfound" => "foo") }
+  end
+
+  def test_add_wrong_structure_to_application
+    a = Parfait::Application.new(:name => "a")
+    a2 = Parfait::Application.new(:name => "a2")
+    p = Parfait::Page.new(:name => "p")
+    r = Parfait::Region.new(:name => "r")
+    c = Parfait::Control.new(:name => "c",:logtext => "l")
+    assert a.add_page(p).is_a?(Parfait::Application)
+    assert_raises(RuntimeError) { a.add_page(a2) }
+    assert_raises(RuntimeError) { a.add_page(r) }
+    assert_raises(RuntimeError) { a.add_page(c) }
+  end
+
+  def test_add_wrong_structure_to_page
+    a = Parfait::Application.new(:name => "a")
+    p = Parfait::Page.new(:name => "p")
+    p2 = Parfait::Page.new(:name => "p2")
+    r = Parfait::Region.new(:name => "r")
+    c = Parfait::Control.new(:name => "c",:logtext => "l")
+    assert p.add_control(c).is_a?(Parfait::Page)
+    assert_raises(RuntimeError) { p.add_control(a) }
+    assert_raises(RuntimeError) { p.add_control(p2) }
+    assert_raises(RuntimeError) { p.add_control(r) }
+    assert p.add_region(r).is_a?(Parfait::Page)
+    assert_raises(RuntimeError) { p.add_region(a) }
+    assert_raises(RuntimeError) { p.add_region(p2) }
+    assert_raises(RuntimeError) { p.add_region(c) }
+  end
+
+  def test_add_wrong_structure_to_region
+    a = Parfait::Application.new(:name => "a")
+    p = Parfait::Page.new(:name => "p")
+    r = Parfait::Region.new(:name => "r")
+    r2 = Parfait::Region.new(:name => "r2")
+    c = Parfait::Control.new(:name => "c",:logtext => "l")
+    assert r.add_control(c).is_a?(Parfait::Region)
+    assert_raises(RuntimeError) { r.add_control(a) }
+    assert_raises(RuntimeError) { r.add_control(p) }
+    assert_raises(RuntimeError) { r.add_control(r2) }
+    assert r.add_region(r2).is_a?(Parfait::Region)
+    assert_raises(RuntimeError) { r.add_region(a) }
+    assert_raises(RuntimeError) { r.add_region(p) }
+    assert_raises(RuntimeError) { r.add_region(c) }
+  end
 
   def test_parfait_generic_directives_input
     Parfait::set_logroutine { |string| } # no need to log anything
@@ -214,7 +303,6 @@ class ParfaitTest < Minitest::Test
  
   def test_parfait_generic_directives_noninput
     Parfait::set_logroutine { |string| } # no need to log anything
-    @val = nil
     c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
     c1.add_goto { "eureka" }
     assert c1.goto == "eureka"
@@ -223,7 +311,6 @@ class ParfaitTest < Minitest::Test
  
   def test_parfait_custom_directives_noninput
     Parfait::set_logroutine { |string| } # no need to log anything
-    @val = nil
     c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
     c1.add_navigate { "squirrel" }
     c1.add_goto { "chipmonk" }
@@ -231,5 +318,124 @@ class ParfaitTest < Minitest::Test
     assert c1.goto == "chipmonk"
   end
  
- 
+  def test_parfait_end_to_end_1
+    Parfait::set_logroutine { |string| } # no need to log anything
+    b = Watir::Browser.new
+
+    app = Parfait::Application.new(:name => "Application")
+    app.set_browser(b)
+
+    page = Parfait::Page.new(:name => "Page")
+    app.add_page(page)
+
+    control = Parfait::Control.new(:name => "Control",:logtext => "control")
+    page.add_control(control)
+    control.add_get { @value }
+    control.add_set { |input| @value = input }
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "armadillo"
+    app.page("Page").control("Control").update "hello"
+    assert Thread.current[:parfait_region] == Thread.current[:parfait_browser]
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "bat"
+    assert app.page("Page").control("Control").retrieve == "hello"
+    assert Thread.current[:parfait_region] == Thread.current[:parfait_browser]
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "capybara"
+    app.page("Page").control("Control").verify "hello"
+    assert Thread.current[:parfait_region] == Thread.current[:parfait_browser]
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "dingo"
+    assert app.page("Page").control("Control").confirm "hello"
+    assert Thread.current[:parfait_region] == Thread.current[:parfait_browser]
+  end
+
+  def test_parfait_end_to_end_2
+    Parfait::set_logroutine { |string| } # no need to log anything
+    b = Watir::Browser.new
+
+    app = Parfait::Application.new(:name => "Application")
+    app.set_browser(b)
+
+    page = Parfait::Page.new(:name => "Page")
+    app.add_page(page)
+
+    region = Parfait::Region.new(:name => "Region")
+    page.add_region(region)
+    region.add_filter { |value| Thread.current[:parfait_region] += "#{value}" }
+
+    control = Parfait::Control.new(:name => "Control",:logtext => "control")
+    region.add_control(control)
+    control.add_get { @value }
+    control.add_set { |input| @value = input }
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "armadillo"
+    app.page("Page").region("Region" => " poop").control("Control").update "hello"
+    assert Thread.current[:parfait_region] == "armadillo poop"
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "bat"
+    assert app.page("Page").region("Region" => " poop").control("Control").retrieve == "hello"
+    assert Thread.current[:parfait_region] == "bat poop"
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "capybara"
+    app.page("Page").region("Region" => " poop").control("Control").verify "hello"
+    assert Thread.current[:parfait_region] == "capybara poop"
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "dingo"
+    assert app.page("Page").region("Region" => " poop").control("Control").confirm "hello"
+    assert Thread.current[:parfait_region] == "dingo poop"
+  end
+   
+  def test_parfait_end_to_end_3
+    Parfait::set_logroutine { |string| } # no need to log anything
+    b = Watir::Browser.new
+
+    app = Parfait::Application.new(:name => "Application")
+    app.set_browser(b)
+    page = Parfait::Page.new(:name => "Page")
+    app.add_page(page)
+
+    region1 = Parfait::Region.new(:name => "Region 1")
+    page.add_region(region1)
+    region1.add_filter { |value| Thread.current[:parfait_region] += "#{value}" }
+
+    region2 = Parfait::Region.new(:name => "Region 2")
+    region1.add_region(region2)
+    region2.add_filter { |value| Thread.current[:parfait_region] += "#{value}" }
+
+    control = Parfait::Control.new(:name => "Control",:logtext => "control")
+    region2.add_control(control)
+    control.add_get { @value }
+    control.add_set { |input| @value = input }
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "fox"
+    app.page("Page").region("Region 1" => " trot").region("Region 2" => " zero").control("Control").update "hello"
+    assert Thread.current[:parfait_region] == "fox trot zero"
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "gecko"
+    assert app.page("Page").region("Region 1" => " insurance").region("Region 2" => " salesman").control("Control").retrieve == "hello"
+    assert Thread.current[:parfait_region] == "gecko insurance salesman"
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "hyena"
+    app.page("Page").region("Region 1" => " laughing").region("Region 2" => " stock").control("Control").verify "hello"
+    assert Thread.current[:parfait_region] == "hyena laughing stock"
+
+    Thread.current[:parfait_region] = ""
+    Thread.current[:parfait_browser] = "ibis"
+    assert app.page("Page").region("Region 1" => " football").region("Region 2" => " stinks").control("Control").confirm "hello"
+    assert Thread.current[:parfait_region] == "ibis football stinks"
+  end
+   
+   
 end
