@@ -5,30 +5,55 @@ require 'parfait'
 eirenerx = Parfait::Application.new(:name => "EireneRx")
 
 # Define the Pages
-login = eirenerx.add_page(:label => :login, :text => "login page")
-home = eirenerx.add_page(:label => :home, :text => "home page")
-message = eirenerx.add_page(:label => :message_new, :text => "new message page")
+login = Parfait::Page.new(:name => "Login Page")
+eirenerx.add_page(login)
+home = Parfait::Page.new(:name => "Home Page")
+eirenerx.add_page(home)
+message = Parfait::Page.new(:name => "New Message Page")
+eirenerx.add_page(message)
 
 # Define the Controls
-userid = login.add_control(:label => :userid, :text => "user ID")
+userid = Parfait::Control.new(:name => "User ID", :logtext => "user ID")
+login.add_control(userid)
 userid.add_set { |value|
-  Thread.current[:parfait_browser].text_field(:id => 'user_username').when_present.set value
+  Parfait::browser.text_field(:id => 'user_username').when_present.set value
 }
-userid.add_get { |opts|
-  Thread.current[:parfait_browser].text_field(:id => 'user_username').when_present.value
+userid.add_get {
+  Parfait::browser.text_field(:id => 'user_username').when_present.value
 }
 
-userid.add_set {
-  browser.text_field(:id => 'user_username').when_present.set 'xxxx'
+userpw = Parfait::Control.new(:name => "User Password", :logtext => "user password")
+login.add_control(userpw)
+userpw.add_set { |value|
+  Parfait::browser.text_field(:id => 'user_password').when_present.set value
+}
+userpw.add_get {
+  Parfait::browser.text_field(:id => 'user_password').when_present.value
+}
+
+signin = Parfait::Control.new(:name => "Sign In", :logtext => "sign in")
+login.add_control(signin)
+signin.add_goto { 
+  Parfait::browser.button(:id => 'user_submit').when_present.click
+}
+
+# Configure Parfait logging
+Parfait::set_logroutine { |logstring|
+  puts logstring
 }
 
 # Now run it
 browser = Watir::Browser.new
-browser.goto 'xxxx'
+browser.goto 'https://staging.eirenerx.com/'
+Parfait::set_browser(browser)
 
 # Login 
-eirenerx.page(:login).control(:userid).set 'xxxx'
-#browser.text_field(:id => 'user_password').when_present.set 'xxxx'
+eirenerx.page("Login Page").control("User ID").update 'MUPrescriberman'
+eirenerx.page("Login Page").control("User ID").retrieve
+eirenerx.page("Login Page").control("User ID").confirm 'MUPrescriberman'
+eirenerx.page("Login Page").control("User ID").verify 'MUPrescriberman'
+eirenerx.page("Login Page").control("User Password").update 'xxxxxxxxx'
+eirenerx.page("Login Page").control("Sign In").navigate
 #browser.button(:id => 'user_submit').when_present.click
 
 # New Message
