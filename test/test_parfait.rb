@@ -75,6 +75,14 @@ class ParfaitTest < Minitest::Test
     assert myapp.browser == b
   end
 
+  def test_parfait_filter_browser
+    b = Watir::Browser.new
+    Parfait::set_browser b
+    assert Parfait::browser == b
+    a = "umbrella"
+    Parfait::filter_browser a
+    assert Parfait::browser == a
+  end
 
   def test_page_creation_happy_path
     assert Parfait::Page.new(:name => "a").is_a?(Parfait::Page)

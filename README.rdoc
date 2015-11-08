@@ -54,11 +54,11 @@ Each non-data control is built upon a single +goto+ directive:
 
 From this directive, a secondary +navigate+ directive is built:
 
-- +navigate+ - uses the Control to navigate.  Logs its action.  (This is the user-callable version of +goto+.)
+- +navigate+ - Uses the Control to navigate.  Logs its action.  (This is the user-callable version of +goto+.)
 
 == How do I get started with Parfait?
 
-The code examples used below are all from the Parfait repository in the +examples/example1+ directory.  In this directory, we will be automating control of the +index.html+ page.
+The code examples used below are all taken from the Parfait repository in the +examples/example1+ directory.  In this directory, we will be automating control of the +index.html+ page.
 
 Remember, Parfait breaks the code into two layers, so we'll define those layers in diferent files.  The workflow later will be defined in +demo.rb+, but let's start by using Parfait to define the control layer in +page.rb+.
 
@@ -66,12 +66,10 @@ Remember, Parfait breaks the code into two layers, so we'll define those layers 
 
 Our first step is to define a page.  We'll name it "Sample Page" to match the name of the page we're controlling:
 
-  # Define the Page
   sample_page = Parfait::Page.new(:name => "Sample Page")
 
 Next we should add the page to our application:  
 
-  # Add the page to our application
   sample_page.add_to_application("Sample App")
 
 Since our application has not yet been defined, this call will actually create the Parfait::Application object under the covers.  This may seem a bit backward, but it allows a whole bunch of Parfait Page definitions to be pre-loaded in our test suite without having to worry about passing around an Application object.  We'll be able to get an instance of this object later on in the workflow layer.
@@ -82,19 +80,14 @@ Our sample web page starts with a set of radio buttons.  A data control like thi
 
 First, we create a Control object:
 
-  ##################################################################
-  # Define the party selection control
-  ##################################################################
   party = Parfait::Control.new(:name => "Party", :logtext => "political party")
 
 Next, we add this object to the Page:
 
-  # Add our new control to the page
   party.add_to_page(sample_page)
 
 Then we define +get+ and +set+ directives for the control.  For the +get+, no parameters are necessary and the code passed in should return the value of the control:
 
-  # Define a "get" for the control
   party.add_get {
     retval = nil
     retval = Parfait::browser.div(:id => "radio-example").radio(:value => "Federalist").set? ? "Federalist" : retval
@@ -105,42 +98,43 @@ Then we define +get+ and +set+ directives for the control.  For the +get+, no pa
 
 For the +set+ directive, a single value is taken as input, followed by an optional hash.  In most cases, we can ignore the hash.
 
-  # Define a "set" for the control
   party.add_set { |input|
     Parfait::browser.div(:id => "radio-example").radio(:value => input).set
   }
 
+Now that the +get+ and +set+ directives are defined for this control, Parfait will use them to build +update+, +retrieve+, +confirm+, and +verify+ directives for you.  We'll use those in the workflow layer in a bit.
+
 We also have a "Set My Party" button to add as a non-data Control.  Let's add that to our Page definition as well.  The difference with the non-data Control is that the only directive we set here is the +goto+ method:
 
-  ##################################################################
-  # Define the "Set My Party" control
-  ##################################################################
   set_my_party = Parfait::Control.new(:name => "Set My Party", :logtext => "Set My Party button")
   
-  # Add our new control to the page
   set_my_party.add_to_page(sample_page)
   
-  # Define a "goto" this control
   set_my_party.add_goto {
     Parfait::browser.button(:value => "Set My Party").click
   }
 
+With a +goto+ directive defined, Parfait will build the +navigate+ directive from that code, allowing navigation with better logging.  Again, we'll see that when we code the workflow layer.
+
 === Working with Regions
 
-  ##################################################################
-  # Define a Region to isolate information for a single president
-  ##################################################################
+When automating web pages, we often have to deal with repeated elements that are similar, or even identical.  Parfait allows the definition of Regions to focus on a specific entry in that list and then locate the common control from there.  Consider the list of presidents presented in +index.html+/.
+
+We will define a Region to isolate information for a single president.  This wil allow us to easily get at the fields for that president with subsequent control definitions for that region.  First we can define the Region and add it to the Page.
+
   president_region = Parfait::Region.new(:name => "President")
-  
-  # Add this region to the page
   president_region.add_to_page(sample_page)
+
+The key piece in defining the region is the filter, which reduces the scope Watir is looking at by starting with +Parfait::browser+, applying the filter and then calling +Parfait::filter_browser+ to store the reduced scope. 
+
+The add_filter method will take a single parameter - if more are necessary, then a subfilter should be used instead.
   
   # Define a filter so that this region will allow focus on a single entry
   president_region.add_filter { |president_name|
     table_rows = Parfait::browser.div(:id => "presidents").trs
     table_rows.each do |tr|
       if tr.text =~ /#{president_name}/
-        Thread.current[:parfait_region] = tr
+        Parfait::filter_browser tr
         break
       end
     end
