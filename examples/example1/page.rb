@@ -55,11 +55,10 @@ president_region.add_filter { |president_name|
   table_rows = Parfait::browser.div(:id => "presidents").trs
   table_rows.each do |tr|
     if tr.text =~ /#{president_name}/
-      Thread.current[:parfait_region] = tr
+      Parfait::filter_browser tr
       break
     end
   end
-  Thread.current[:parfait_region]
 }
 
 

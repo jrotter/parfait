@@ -138,9 +138,53 @@ The add_filter method will take a single parameter - if more are necessary, then
         break
       end
     end
-    Thread.current[:parfait_region]
   }
 
+With this filter defined, we can access the controls under each president much more easily.  Let's start with the nickname control:
+
+  nickname = Parfait::Control.new(:name => "Nickname", :logtext => "president nickname")
+  nickname.add_to_region(president_region)
+
+  nickname.add_get {
+    Parfait::browser.text_field.value
+  }
+
+  nickname.add_set { |input|
+    Parfait::browser.text_field.set input
+  }
+
+Note that the +get+ and the +set+ rely on inheriting the filtered browser from the "President" region.  That means the Watir code can just assume that it's looking at a single table row.  Since this is the only text field within that row, no further specification is necessary than +Parfait::browser.text_field+ to access that control.
+
+Similarly, the "Update Nickname" control can be defined:
+
+  update_nickname = Parfait::Control.new(:name => "Set My Party", :logtext => "Set My Party button")
+  
+  update_nickname.add_to_region(president_region)
+  
+  update_nickname.add_goto {
+    Parfait::browser.button(:value => "Update").click
+  }
+
+Finally, we can define the remaining two controls as well:
+
+  biography = Parfait::Control.new(:name => "Biography", :logtext => "Biography link")
+  
+  biography.add_to_region(president_region)
+  
+  biography.add_goto {
+    Parfait::browser.link(:text => "Biography").click
+  }
+  
+  
+  cabinet = Parfait::Control.new(:name => "Cabinet", :logtext => "Cabinet link")
+  
+  cabinet.add_to_region(president_region)
+  
+  cabinet.add_goto {
+    Parfait::browser.link(:text => "Cabinet").click
+  }
+
+And that completes the Page definition.  Now on to the workflow layer.
 
 === Invoke the Workflow
 
