@@ -63,6 +63,72 @@ module Parfait
     end
 
 
+    # Add this Control to a Page
+    #
+    # *Options*
+    #
+    # +page+:: specifies a Parfait::Page object to add this Control to
+    #
+    # *Example*
+    #
+    #   loginpage = Parfait::Page.new(
+    #     :name => "Login Page"
+    #   )
+    #   newcontrol = Parfait::Control.new(
+    #     :name => "User ID",
+    #     :logtext = "user ID"
+    #   )
+    #   newcontrol.add_to_page(loginpage)
+    #
+    def add_to_page(page)
+
+      if page
+        case
+        when page.is_a?(Parfait::Page)
+          page.add_control(self)
+        else
+          raise "Input value must be a Page object when adding this Control to a Page"
+        end
+      else
+        raise "Input value cannot be nil when adding this Control to a Page"
+      end
+      self
+    end
+
+
+    # Add this Control to a Region
+    #
+    # *Options*
+    #
+    # +region+:: specifies a Parfait::Region object to add this Control to
+    #
+    # *Example*
+    #
+    #   user = Parfait::Region.new(
+    #     :name => "User"
+    #   )
+    #   newcontrol = Parfait::Control.new(
+    #     :name => "Edit User",
+    #     :logtext = "edit user link"
+    #   )
+    #   user.add_to_region(newcontrol)
+    #
+    def add_to_region(region)
+
+      if region
+        case
+        when region.is_a?(Parfait::Region)
+          region.add_control(self)
+        else
+          raise "Input value must be a Region object when adding this Control to a Region"
+        end
+      else
+        raise "Input value cannot be nil when adding this Control to a Region"
+      end
+      self
+    end
+
+
     # Method description
     #
     # *Options*

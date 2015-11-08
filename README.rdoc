@@ -58,71 +58,95 @@ From this directive, a secondary +navigate+ directive is built:
 
 == How do I get started with Parfait?
 
-=== Define an Application
+The code examples used below are all from the Parfait repository in the +examples/example1+ directory.  In this directory, we will be automating control of the +index.html+ page.
 
-To get started with Parfait, first we have to define an Application.  As an example, let's work with a ficticious blogging application.
-
-  # Define the application
-  blogger = Parfait::Application.new(:name => "Blogger")
+Remember, Parfait breaks the code into two layers, so we'll define those layers in diferent files.  The workflow later will be defined in +demo.rb+, but let's start by using Parfait to define the control layer in +page.rb+.
 
 === Define a Page
 
-Next, let's define a Page.  As an example, let's define a page that creates or edits a blog post.  Note that we'll handle other setup (like requires) in the workflow code later.  We'll put the page information in file +pages/edit_post.rb+.
+Our first step is to define a page.  We'll name it "Sample Page" to match the name of the page we're controlling:
 
-  # Define the page - we'll use an alias since this is used to 
-  #   both add and edit
-  edit_blog = Parfait::Page.new(
-    :name => "Edit Post",
-    :aliases => ["New Post"]
-  )
+  # Define the Page
+  sample_page = Parfait::Page.new(:name => "Sample Page")
+
+Next we should add the page to our application:  
+
+  # Add the page to our application
+  sample_page.add_to_application("Sample App")
+
+Since our application has not yet been defined, this call will actually create the Parfait::Application object under the covers.  This may seem a bit backward, but it allows a whole bunch of Parfait Page definitions to be pre-loaded in our test suite without having to worry about passing around an Application object.  We'll be able to get an instance of this object later on in the workflow layer.
 
 === Add some Controls
 
-Next, we're going to define the navigation elements on the page.  On this page, the options are "Submit" and "Cancel" buttons.  Note that we're using Watir under the covers as we code the control layer.
+Our sample web page starts with a set of radio buttons.  A data control like this can be defined in three steps.
 
-  edit_blog.add_navigation { |opts|
-    case opts[:to]
+First, we create a Control object:
 
-    when "Submit"
-      Parfait.browser.button(:id => "submit").when_present.click
+  ##################################################################
+  # Define the party selection control
+  ##################################################################
+  party = Parfait::Control.new(:name => "Party", :logtext => "political party")
 
-    when "Cancel"
-      Parfait.browser.button(:id => "cancel").when_present.click
+Next, we add this object to the Page:
 
-    else
-      raise "Navigate called with an invalid destination \"#{o[:to]}\""
+  # Add our new control to the page
+  party.add_to_page(sample_page)
+
+Then we define +get+ and +set+ directives for the control.  For the +get+, no parameters are necessary and the code passed in should return the value of the control:
+
+  # Define a "get" for the control
+  party.add_get {
+    retval = nil
+    retval = Parfait::browser.div(:id => "radio-example").radio(:value => "Federalist").set? ? "Federalist" : retval
+    retval = Parfait::browser.div(:id => "radio-example").radio(:value => "Republicrat").set? ? "Republicrat" : retval
+    retval = Parfait::browser.div(:id => "radio-example").radio(:value => "Know-Nothing").set? ? "Know-Nothing" : retval
+    retval
+  }
+
+For the +set+ directive, a single value is taken as input, followed by an optional hash.  In most cases, we can ignore the hash.
+
+  # Define a "set" for the control
+  party.add_set { |input|
+    Parfait::browser.div(:id => "radio-example").radio(:value => input).set
+  }
+
+We also have a "Set My Party" button to add as a non-data Control.  Let's add that to our Page definition as well.  The difference with the non-data Control is that the only directive we set here is the +goto+ method:
+
+  ##################################################################
+  # Define the "Set My Party" control
+  ##################################################################
+  set_my_party = Parfait::Control.new(:name => "Set My Party", :logtext => "Set My Party button")
+  
+  # Add our new control to the page
+  set_my_party.add_to_page(sample_page)
+  
+  # Define a "goto" this control
+  set_my_party.add_goto {
+    Parfait::browser.button(:value => "Set My Party").click
+  }
+
+=== Working with Regions
+
+  ##################################################################
+  # Define a Region to isolate information for a single president
+  ##################################################################
+  president_region = Parfait::Region.new(:name => "President")
+  
+  # Add this region to the page
+  president_region.add_to_page(sample_page)
+  
+  # Define a filter so that this region will allow focus on a single entry
+  president_region.add_filter { |president_name|
+    table_rows = Parfait::browser.div(:id => "presidents").trs
+    table_rows.each do |tr|
+      if tr.text =~ /#{president_name}/
+        Thread.current[:parfait_region] = tr
+        break
+      end
     end
+    Thread.current[:parfait_region]
   }
 
-Now we need to add the basic controls on the page for entering a subject and a body.
-
-  # Add the blog subject control to the Edit Blog page
-  subject = edit_blog.add_control(
-    :label => :subject,
-    :text => "blog subject")
-    
-  subject.add_set{ |value|
-    Parfait::browser().text_field(:id => "subject").when_present.set value
-  }
-  
-  subject.add_get{ |opts|
-    Parfait::browser.text_field(:id => "subject").when_present.value
-  }
-  
-  # Add the blog body control to the Edit Blog page
-  body = edit_blog.add_control(
-    :label => :body,
-    :text => "blog body")
-    
-  body.add_set{ |value|
-    Parfait::browser().text_field(:id => "body").when_present.set value
-  }
-  
-  body.add_get{ |opts|
-    Parfait::browser.text_field(:id => "body").when_present.value
-  }
-
-That's all we need to define the Edit Blog page.  With +get+ and +set+ defined for each Control, Parfait will build +retrieve+, +update+, +confirm+, and +verify+ under the covers and these directives can all be invoked from the workflow layer.
 
 === Invoke the Workflow
 

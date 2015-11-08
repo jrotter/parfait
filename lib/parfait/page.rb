@@ -43,6 +43,43 @@ module Parfait
     end
 
   
+    # Add this Page to an Application
+    #
+    # If the specified application does not exist, it will be added
+    #
+    # *Options*
+    #
+    # +application+:: specifies the Application to add this page to, either via the String name or the Parfait::Application object
+    #
+    # *Example*
+    #
+    #   mypage = Parfait::Page.new(
+    #     :name => "Edit User" 
+    #   )
+    #   mypage.add_to_application("Blogger")
+    #
+    def add_to_application(application)
+
+      if application
+        case
+        when application.is_a?(String)
+          app = Parfait::Application.find(application)
+          unless app
+            app = Parfait::Application.new(:name => application)
+          end
+          app.add_page(self)
+        when application.is_a?(Parfait::Application)
+          application.add_page(self)
+        else
+          raise "Input value must be a String or an Application object when adding this Page to an Application"
+        end
+      else
+        raise "Input value cannot be nil when when adding this Page to an Application"
+      end
+      self
+    end
+
+
     # Add a Region to the current Page
     #
     # *Options*

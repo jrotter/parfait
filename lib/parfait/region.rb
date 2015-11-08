@@ -71,6 +71,68 @@ module Parfait
     end
 
 
+    # Add this Region to a Page
+    #
+    # *Options*
+    #
+    # +page+:: specifies a Parfait::Page object to add this Region to
+    #
+    # *Example*
+    #
+    #   mypage = Parfait::Page.new(
+    #     :name => "Edit User",
+    #     :aliases => ["User Edit"]
+    #   )
+    #   region.add_to_page(mypage)
+    #
+    def add_to_page(page)
+
+      if page
+        case
+        when page.is_a?(Parfait::Page)
+          page.add_region(self)
+        else
+          raise "Input value must be a Page object when adding this Region to a Page"
+        end
+      else
+        raise "Input value cannot be nil when adding this Region to a Page"
+      end
+      self
+    end
+
+
+    # Add this Region to a Region
+    #
+    # *Options*
+    #
+    # +region+:: specifies a Parfait::Region object to add this Region to
+    #
+    # *Example*
+    #
+    #   existing_region = Parfait::Region.new(
+    #     :name => "User"
+    #   )
+    #   new_region = Parfait::Region.new(
+    #     :name => "Roles"
+    #   )
+    #   new_region.add_to_region(existing_region)
+    #
+    def add_to_region(region)
+
+      if region
+        case
+        when region.is_a?(Parfait::Region)
+          region.add_region(self)
+        else
+          raise "Input value must be a Region object when adding this Region to another Region"
+        end
+      else
+        raise "Input value cannot be nil when adding this Region to another Region"
+      end
+      self
+    end
+
+
     # Set the filter for this Region to use.
     #
     # When a child of this Region is invoked, the Region will use this 
