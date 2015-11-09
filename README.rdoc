@@ -188,26 +188,57 @@ And that completes the Page definition.  Now on to the workflow layer.
 
 === Invoke the Workflow
 
-To define the workflow layer, let's edit +scripts/edit_blog.rb+.  First we need to require the appropriate gems and start Watir up.
+To define the workflow layer, let's edit +demo.rb+.  First we need to require Watir and Parfait:
 
   require 'watir-webdriver'
   require 'parfait'
   
+Next we want to include our page definition.
+
+  require './page'
+
+Then we can set up the browser, go to the sample page, and tell Parfait about it:
+
   browser = Watir::Browser.new
-  browser.goto 'http://mysite.com/blog/new'
+  browser.goto "file://#{ENV['HOME']}/git/parfait/examples/example1/index.html"
   
-Next we'll invoke Parfait to fill in the fields and submit.
+  Parfait::set_browser(browser)
 
-  Parfait.update(:onpage => "New Blog", :subject => "This is my subject")
-  Parfait.update(:onpage => "New Blog", :body => "This is my body")
-  Parfait.navigate(:onpage => "New Blog", :to => "Submit")
+Before we start using our directives, we also need to pass a logging routine to Parfait.  This routine just tells Parfait how to log a given string.  For our demonstration, we'll just print to stdout:
 
-Then we can edit the page, verify that our data was correctly populated, and Cancel out:
+  Parfait::set_logroutine { |logstring|
+    puts logstring
+  }
 
-  Parfait.navigate(:to => "Edit Post")
-  Parfait.verify(:onpage => "New Blog", :subject => "This is my subject")
-  Parfait.verify(:onpage => "New Blog", :body => "This is my body")
-  Parfait.navigate(:onpage => "New Blog", :to => "Cancel")
- 
-More to come...
+And finally, let's get the Application we defined in +page.rb+ saved into an object:
+
+  app = Parfait::Application.find("Sample App")
+
+Now we can invoke directives!  With all the setup behind us, it's now pretty straightforward to manipulate the controls on this page.  Let's start by setting our party:
+
+  app.page("Sample Page").control("Party").update "Republicrat"
+
+Note that the logging for that call indicates both what the control contained previously as well as what it has been set to.
+
+Any of the directives will work on this control.  If we want to verify that it is set as we requested, we can do that as well:
+
+  app.page("Sample Page").control("Party").verify "Republicrat"
+
+We can submit our change using the "Set My Party" button:
+
+  app.page("Sample Page").control("Set My Party").navigate
+
+Using the Region we defined, we can also easily manipulate controls within the table.  To change the nickname for John Adams, we can just target his table entry like this:
+
+  app.page("Sample Page").region("President" => "John Adams").control("Nickname").update "Sammy's Bro"
+
+Similarly, we can verify his nickname:
+
+  app.page("Sample Page").region("President" => "John Adams").control("Nickname").verify "Sammy's Bro"
+
+We can also use our Region to navigate to the biography for Thomas Jefferson:
+
+  app.page("Sample Page").region("President" => "Thomas Jefferson").control("Biography").navigate
+
+This is a simple example, but hopefully it demonstrates the power and flexibility Parfait gives you in managing controls and using them in the workflow layer of your test automation.
 
