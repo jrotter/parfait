@@ -1,7 +1,10 @@
 module Parfait
 
   class Application
-  
+ 
+    # List of all defined applications 
+    @@all = Hash.new
+
     # Define an application
     #
     # *Options*
@@ -30,6 +33,22 @@ module Parfait
       set_browser(o[:browser])
 
       @pages = Hash.new
+      @@all[@name] = self
+    end
+
+
+    # Find an application object by name
+    #
+    # *Options*
+    #
+    # +name+:: specifies the name of the application to search for
+    #
+    # *Example*
+    #
+    #   blog_app = Parfait::Application.find("Blog App")
+    #
+    def self.find(name)
+      @@all[name]
     end
 
   

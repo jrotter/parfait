@@ -43,6 +43,27 @@ class ParfaitTest < Minitest::Test
     }
   end
 
+  def test_application_find
+    assert Parfait::Application.find("App One") == nil
+    assert Parfait::Application.find("App Two") == nil
+    assert Parfait::Application.find("App Three") == nil
+
+    app1 = Parfait::Application.new(:name => "App One")
+    assert Parfait::Application.find("App One") == app1
+    assert Parfait::Application.find("App Two") == nil
+    assert Parfait::Application.find("App Three") == nil
+
+    app2 = Parfait::Application.new(:name => "App Two")
+    assert Parfait::Application.find("App One") == app1
+    assert Parfait::Application.find("App Two") == app2
+    assert Parfait::Application.find("App Three") == nil
+
+    app3 = Parfait::Application.new(:name => "App Three")
+    assert Parfait::Application.find("App One") == app1
+    assert Parfait::Application.find("App Two") == app2
+    assert Parfait::Application.find("App Three") == app3
+  end
+
   def test_application_creation_browser_method
     b = Watir::Browser.new
     myapp = Parfait::Application.new(:name => "a", :browser => b)
@@ -54,6 +75,14 @@ class ParfaitTest < Minitest::Test
     assert myapp.browser == b
   end
 
+  def test_parfait_filter_browser
+    b = Watir::Browser.new
+    Parfait::set_browser b
+    assert Parfait::browser == b
+    a = "umbrella"
+    Parfait::filter_browser a
+    assert Parfait::browser == a
+  end
 
   def test_page_creation_happy_path
     assert Parfait::Page.new(:name => "a").is_a?(Parfait::Page)
@@ -79,6 +108,22 @@ class ParfaitTest < Minitest::Test
     assert_raises(RuntimeError) { 
       Parfait::Page.new(:name => "a",:aliases =>["b","c",:not_a_string])
     }
+  end
+
+  def test_add_page_to_application_via_page_object
+    p = Parfait::Page.new(:name => "my page")
+    p.add_to_application("Hello")
+    assert_raises(RuntimeError) { p.add_to_application(nil) }
+    assert_raises(RuntimeError) { p.add_to_application(12) }
+    a = Parfait::Application.find("Hello")
+    assert a.page("my page") == p
+
+    b = Parfait::Application.new(:name => "Goodbye")
+    q = Parfait::Page.new(:name => "my page")
+    q.add_to_application(b)
+    assert_raises(RuntimeError) { q.add_to_application(nil) }
+    assert_raises(RuntimeError) { q.add_to_application(12) }
+    assert b.page("my page") == q
   end
 
   def test_add_page_to_application_happy_path_no_alias
@@ -153,6 +198,13 @@ class ParfaitTest < Minitest::Test
     assert p.add_control(c).is_a?(Parfait::Page)
   end
 
+  def test_add_control_to_page_via_self
+    p = Parfait::Page.new(:name => "page")
+    c = Parfait::Control.new(:name => "c",:logtext => "d")
+    assert c.add_to_page(p).is_a?(Parfait::Control)
+    assert p.control("c") == c
+  end
+
   def test_get_control_from_page
     p = Parfait::Page.new(:name => "page")
     c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
@@ -166,6 +218,22 @@ class ParfaitTest < Minitest::Test
     assert_raises(RuntimeError) { p.control("c3") }
   end
 
+  def test_add_region_to_page_via_self
+    p = Parfait::Page.new(:name => "page")
+    r = Parfait::Region.new(:name => "region")
+    r.add_filter { |a,b| a }
+    assert p.add_region(r).is_a?(Parfait::Page)
+    assert p.region("region" => "chicken") == r
+  end
+
+  def test_add_region_to_page_via_self
+    p = Parfait::Page.new(:name => "page")
+    r = Parfait::Region.new(:name => "region")
+    r.add_filter { |a,b| a }
+    assert r.add_to_page(p).is_a?(Parfait::Region)
+    assert p.region("region" => "rooster") == r
+  end
+
   def test_add_control_to_region
     r = Parfait::Region.new(:name => "region")
     c = Parfait::Control.new(:name => "c",:logtext => "d")
@@ -173,6 +241,13 @@ class ParfaitTest < Minitest::Test
 
     c = Parfait::Control.new(:name => "c",:logtext => "d",:aliases => ["x","y"])
     assert r.add_control(c).is_a?(Parfait::Region)
+  end
+
+  def test_add_control_to_region_via_self
+    r = Parfait::Region.new(:name => "region")
+    c = Parfait::Control.new(:name => "c",:logtext => "d")
+    assert c.add_to_region(r).is_a?(Parfait::Control)
+    assert r.control("c") == c
   end
 
   def test_get_control_from_region
@@ -188,13 +263,22 @@ class ParfaitTest < Minitest::Test
     assert_raises(RuntimeError) { r.control("c3") }
   end
 
-  def test_add_region_to_region
+  def test_add_region_to_region_via_existing_object
     parent = Parfait::Region.new(:name => "parent")
     child = Parfait::Region.new(:name => "child")
     assert parent.add_region(child).is_a?(Parfait::Region)
 
     child = Parfait::Region.new(:name => "child",:aliases => ["x","y"])
     assert parent.add_region(child).is_a?(Parfait::Region)
+  end
+
+  def test_add_region_to_region_via_new_object
+    parent = Parfait::Region.new(:name => "parent")
+    parent.add_filter { |a,b| a }
+    child = Parfait::Region.new(:name => "child")
+    child.add_filter { |a,b| a }
+    assert child.add_to_region(parent).is_a?(Parfait::Region)
+    assert parent.region("child" => "seagull") == child
   end
 
   def test_get_region_from_region
