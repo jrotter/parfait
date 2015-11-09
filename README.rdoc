@@ -197,7 +197,7 @@ Next we want to include our page definition.
 
   require './page'
 
-Then we can set up the browser, go to the sample page, and tell Parfait about it:
+Then we can set up the browser, go to the sample page, and tell Parfait about it.  You'll want to adjust the directory here as necessary.
 
   browser = Watir::Browser.new
   browser.goto "file://#{ENV['HOME']}/git/parfait/examples/example1/index.html"
