@@ -1,6 +1,6 @@
 module Parfait
 
-  class Application
+  class Application < ParfaitArtifact
  
     # List of all defined applications 
     @@all = Hash.new
@@ -141,7 +141,10 @@ module Parfait
     def page(requested_name)
       page = @pages[requested_name] 
       if page
-        # Confirm that we are on the requested page
+        # Confirm that we are in the requested application
+        if is_present_defined?
+          raise "Cannot navigate to page \"#{requested_name}\" because application presence check failed" unless present()
+        end
 
         # Pass the browser through to any subsequently called methods
         Thread.current[:parfait_region] = Thread.current[:parfait_browser]
