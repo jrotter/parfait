@@ -1,5 +1,5 @@
-
 require 'minitest/autorun'
+require 'test_helper'
 
 class ArtifactTest < Minitest::Test
 
