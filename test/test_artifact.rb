@@ -3,6 +3,11 @@ require 'test_helper'
 
 class ArtifactTest < Minitest::Test
 
+  def setup
+    Parfait::set_logroutine { |string| } # no need to log anything
+  end
+
+
   ##################################################
   #
   # Application

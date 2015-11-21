@@ -3,8 +3,11 @@ require 'test_helper'
 
 class EndToEndTest < Minitest::Test
 
-  def test_parfait_end_to_end_1
+  def setup
     Parfait::set_logroutine { |string| } # no need to log anything
+  end
+
+  def test_parfait_end_to_end_1
     b = Watir::Browser.new
 
     app = Parfait::Application.new(:name => "Application")
@@ -40,7 +43,6 @@ class EndToEndTest < Minitest::Test
   end
 
   def test_parfait_end_to_end_2
-    Parfait::set_logroutine { |string| } # no need to log anything
     b = Watir::Browser.new
 
     app = Parfait::Application.new(:name => "Application")
@@ -80,7 +82,6 @@ class EndToEndTest < Minitest::Test
   end
    
   def test_parfait_end_to_end_3
-    Parfait::set_logroutine { |string| } # no need to log anything
     b = Watir::Browser.new
 
     app = Parfait::Application.new(:name => "Application")

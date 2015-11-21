@@ -3,6 +3,10 @@ require 'test_helper'
 
 class ControlTest < Minitest::Test
 
+  def setup
+    Parfait::set_logroutine { |string| } # no need to log anything
+  end
+
   def test_new_control_happy_path
     assert Parfait::Control.new(:name => "c",:logtext => "d").is_a?(Parfait::Control)
     assert Parfait::Control.new(:name => "c",:logtext => "d", :aliases => ["x","y"]).is_a?(Parfait::Control)
@@ -44,7 +48,6 @@ class ControlTest < Minitest::Test
   end
 
   def test_parfait_generic_directives_input
-    Parfait::set_logroutine { |string| } # no need to log anything
     @val = nil
     c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
     c1.add_set { |value| @val = value }
@@ -67,7 +70,6 @@ class ControlTest < Minitest::Test
   end
  
   def test_parfait_custom_directives_input
-    Parfait::set_logroutine { |string| } # no need to log anything
     @val = nil
     c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
     c1.add_update { |value| "chicken" }
@@ -89,7 +91,6 @@ class ControlTest < Minitest::Test
   end
  
   def test_parfait_generic_directives_noninput
-    Parfait::set_logroutine { |string| } # no need to log anything
     c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
     c1.add_goto { "eureka" }
     assert c1.goto == "eureka"
@@ -97,7 +98,6 @@ class ControlTest < Minitest::Test
   end
  
   def test_parfait_custom_directives_noninput
-    Parfait::set_logroutine { |string| } # no need to log anything
     c1 = Parfait::Control.new(:name => "c1",:logtext => "control one")
     c1.add_navigate { "squirrel" }
     c1.add_goto { "chipmonk" }
