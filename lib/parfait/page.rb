@@ -141,7 +141,7 @@ module Parfait
 
         return region
       else
-        raise "Invalid region name requested: \"#{requested_name}\""
+        raise "Invalid region name requested: \"#{opts.first[0]}\""
       end
     end
     
