@@ -142,9 +142,7 @@ module Parfait
       page = @pages[requested_name] 
       if page
         # Confirm that we are in the requested application
-        if is_present_defined?
-          raise "Cannot navigate to page \"#{requested_name}\" because application presence check failed" unless present()
-        end
+        verify_presence "Cannot navigate to page \"#{requested_name}\" because application presence check failed"
 
         # Pass the browser through to any subsequently called methods
         Thread.current[:parfait_region] = Thread.current[:parfait_browser]

@@ -112,6 +112,31 @@ module Parfait
       end
     end
 
+
+    # Verify the presence of this Artifact
+    #
+    # Raises an exception with the specified check if this artifact is not present
+    #
+    # *Options*
+    #
+    # +error_string+:: specifies the string to display if the check fails
+    #
+    # *Example*
+    #
+    #   class Control
+    #     def get(opts = {})
+    #       verify_presence "Cannot call get directive because presence check for control \"#{@name}\" failed"
+    #       return @get_method.call(opts)
+    #     end
+    #   end
+    def verify_presence(error_string)
+      if is_present_defined?
+        unless present()
+          raise error_string
+        end
+      end
+    end
+
   end
 end
 

@@ -251,9 +251,7 @@ module Parfait
       if region
 
         # Confirm that we are in the expected region
-        if is_present_defined?
-          raise "Cannot navigate to region \"#{opts.first[0]}\" because region presence check failed" unless present()
-        end
+        verify_presence "Cannot navigate to region \"#{opts.first[0]}\" because region presence check failed"
 
         # Apply the filter method
         region.filter(opts.first[1])
@@ -319,9 +317,7 @@ module Parfait
       control = @controls[requested_name] 
       if control
         # Confirm that we are in the expected region
-        if is_present_defined?
-          raise "Cannot navigate to control \"#{requested_name}\" because region presence check failed" unless present()
-        end
+        verify_presence "Cannot navigate to control \"#{requested_name}\" because region presence check failed"
 
 
         return control

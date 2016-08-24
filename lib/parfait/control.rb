@@ -139,9 +139,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def verify_control_presence(directive_name)
-      if is_present_defined?
-        raise "Cannot call \"#{directive_name}\" directive because presence check for control \"#{@name}\" failed" unless present()
-      end
+      verify_presence "Cannot call \"#{directive_name}\" directive because presence check for control \"#{@name}\" failed"
     end
 
 
