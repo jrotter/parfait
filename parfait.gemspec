@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'parfait'
   s.version     = '0.10.0'
-  s.date        = '2015-11-20'
+  s.date        = '2016-02-15'
   s.summary     = 'Parfait'
   s.description = 'A base set of test operations for verification of web pages and the controls therein'
   s.add_development_dependency "minitest", [">= 0"]
