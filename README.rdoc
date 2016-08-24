@@ -60,7 +60,7 @@ From this directive, a secondary +navigate+ directive is built:
 
 The code examples used below are all taken from the Parfait repository in the +examples/example1+ directory.  In this directory, we will be automating control of the +index.html+ page.
 
-Remember, Parfait breaks the code into two layers, so we'll define those layers in diferent files.  The workflow later will be defined in +demo.rb+, but let's start by using Parfait to define the control layer in +page.rb+.
+Remember, Parfait breaks the code into two layers, so we'll define those layers in different files.  The workflow layer will be defined in +demo.rb+, but let's start by using Parfait to define the control layer in +page.rb+.
 
 === Define a Page
 

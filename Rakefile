@@ -3,9 +3,9 @@ require 'rake/testtask'
 require 'rdoc/task'
 
 Rake::TestTask.new do |t|
-  t.libs << 'test'
-#  t.test_files = FileList['test/test*.rb']
-#  t.verbose = true
+  t.libs << "test"
+  t.test_files = FileList['test/test*.rb']
+  t.verbose = true
 end
 
 RDoc::Task.new do |rdoc|
@@ -15,3 +15,4 @@ end
 
 desc "Run tests"
 task :default => :test
+

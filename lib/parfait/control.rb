@@ -1,6 +1,6 @@
 module Parfait
 
-  class Control
+  class Control < ParfaitArtifact
   
     attr_reader :name,
       :aliases
@@ -138,7 +138,24 @@ module Parfait
     # *Example*
     #
     #   $$$ Need an example $$$
+    def verify_control_presence(directive_name)
+      if is_present_defined?
+        raise "Cannot call \"#{directive_name}\" directive because presence check for control \"#{@name}\" failed" unless present()
+      end
+    end
+
+
+    # Method description
+    #
+    # *Options*
+    #
+    # +option+:: specifies something
+    #
+    # *Example*
+    #
+    #   $$$ Need an example $$$
     def get(opts = {})
+      verify_control_presence("get")
       return @get_method.call(opts)
     end
 
@@ -153,6 +170,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def set(value,opts = {})
+      verify_control_presence("set")
       @set_method.call(value,opts)
     end
 
@@ -167,6 +185,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def retrieve(opts = {})
+      verify_control_presence("retrieve")
       return @retrieve_method.call(opts)
     end
 
@@ -181,6 +200,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def update(value,opts = {})
+      verify_control_presence("update")
       @update_method.call(value,opts)
     end
 
@@ -195,6 +215,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def confirm(value,opts = {})
+      verify_control_presence("confirm")
       return @confirm_method.call(value,opts)
     end
 
@@ -209,6 +230,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def verify(value,opts = {})
+      verify_control_presence("verify")
       @verify_method.call(value,opts)
     end
  
@@ -223,6 +245,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def goto(opts = {})
+      verify_control_presence("goto")
       return @goto_method.call(opts)
     end
 
@@ -237,6 +260,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def navigate(opts = {})
+      verify_control_presence("navigate")
       return @navigate_method.call(opts)
     end
 
@@ -402,8 +426,8 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def add_generic_retrieve()
-      add_retrieve { 
-        get()
+      add_retrieve { |opts|
+        get(opts)
       }
     end
 

@@ -1,6 +1,6 @@
 module Parfait
 
-  class Region
+  class Region < ParfaitArtifact
   
     attr_reader :name,
       :aliases
@@ -249,6 +249,12 @@ module Parfait
     def region(opts = {})
       region = @regions[opts.first[0]] 
       if region
+
+        # Confirm that we are in the expected region
+        if is_present_defined?
+          raise "Cannot navigate to region \"#{opts.first[0]}\" because region presence check failed" unless present()
+        end
+
         # Apply the filter method
         region.filter(opts.first[1])
 
@@ -312,7 +318,11 @@ module Parfait
     def control(requested_name)
       control = @controls[requested_name] 
       if control
-        # Confirm that the requested control is present
+        # Confirm that we are in the expected region
+        if is_present_defined?
+          raise "Cannot navigate to control \"#{requested_name}\" because region presence check failed" unless present()
+        end
+
 
         return control
       else
