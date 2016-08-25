@@ -43,7 +43,7 @@ module Parfait
     #   )
     #   
     def initialize(opts = {})
-    o = {
+      o = {
         :name => nil,
         :aliases => []
       }.merge(opts)
@@ -68,6 +68,7 @@ module Parfait
           raise "Parfait::Region requires each alias in the array to be a string" unless my_alias.is_a?(String)
         end
       end
+      super
     end
 
 

@@ -60,6 +60,7 @@ module Parfait
           raise "Parfait::Control requires each alias in the array to be a string" unless my_alias.is_a?(String)
         end
       end
+      super
     end
 
 

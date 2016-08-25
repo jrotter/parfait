@@ -34,6 +34,7 @@ module Parfait
 
       @pages = Hash.new
       @@all[@name] = self
+      super
     end
 
 

@@ -40,6 +40,7 @@ module Parfait
       @controls = Hash.new
       @regions = Hash.new
       @page_test = nil
+      super
     end
 
   
