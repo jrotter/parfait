@@ -43,7 +43,7 @@ module Parfait
     #   )
     #   
     def initialize(opts = {})
-    o = {
+      o = {
         :name => nil,
         :aliases => []
       }.merge(opts)
@@ -68,6 +68,7 @@ module Parfait
           raise "Parfait::Region requires each alias in the array to be a string" unless my_alias.is_a?(String)
         end
       end
+      super
     end
 
 
@@ -251,9 +252,7 @@ module Parfait
       if region
 
         # Confirm that we are in the expected region
-        if is_present_defined?
-          raise "Cannot navigate to region \"#{opts.first[0]}\" because region presence check failed" unless present()
-        end
+        verify_presence "Cannot navigate to region \"#{opts.first[0]}\" because region presence check failed"
 
         # Apply the filter method
         region.filter(opts.first[1])
@@ -319,9 +318,7 @@ module Parfait
       control = @controls[requested_name] 
       if control
         # Confirm that we are in the expected region
-        if is_present_defined?
-          raise "Cannot navigate to control \"#{requested_name}\" because region presence check failed" unless present()
-        end
+        verify_presence "Cannot navigate to control \"#{requested_name}\" because region presence check failed"
 
 
         return control

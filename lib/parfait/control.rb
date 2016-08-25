@@ -60,6 +60,7 @@ module Parfait
           raise "Parfait::Control requires each alias in the array to be a string" unless my_alias.is_a?(String)
         end
       end
+      super
     end
 
 
@@ -139,9 +140,7 @@ module Parfait
     #
     #   $$$ Need an example $$$
     def verify_control_presence(directive_name)
-      if is_present_defined?
-        raise "Cannot call \"#{directive_name}\" directive because presence check for control \"#{@name}\" failed" unless present()
-      end
+      verify_presence "Cannot call \"#{directive_name}\" directive because presence check for control \"#{@name}\" failed"
     end
 
 

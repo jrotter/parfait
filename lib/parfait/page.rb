@@ -40,6 +40,7 @@ module Parfait
       @controls = Hash.new
       @regions = Hash.new
       @page_test = nil
+      super
     end
 
   
@@ -132,9 +133,7 @@ module Parfait
       if region
 
         # Confirm that we are on the expected page
-        if is_present_defined?
-          raise "Cannot navigate to region \"#{opts.first[0]}\" because page presence check failed" unless present()
-        end
+        verify_presence "Cannot navigate to region \"#{opts.first[0]}\" because page presence check failed"
 
         # Apply the filter method
         region.filter(opts.first[1])
@@ -258,9 +257,7 @@ module Parfait
       if control
 
         # Confirm that we are on the expected page
-        if is_present_defined?
-          raise "Cannot navigate to control \"#{requested_name}\" because page presence check failed" unless present()
-        end
+        verify_presence "Cannot navigate to control \"#{requested_name}\" because page presence check failed"
 
         return control
       else
