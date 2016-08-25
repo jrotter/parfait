@@ -4,6 +4,10 @@ sample_page = Parfait::Page.new(:name => "Sample Page")
 # Add the page to our application
 sample_page.add_to_application("Sample App")
 
+# Add a check to confirm that we are indeed on this page
+sample_page.add_check {
+  Parfait::browser.h1(:text => "Parfait Example Page").present?
+}
 
 ##################################################################
 # Define the party selection control

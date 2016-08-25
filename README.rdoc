@@ -56,6 +56,18 @@ From this directive, a secondary +navigate+ directive is built:
 
 - +navigate+ - Uses the Control to navigate.  Logs its action.  (This is the user-callable version of +goto+.)
 
+==== Additional Directives
+
+Additionally, Application, Page, Region, and Control objects can each have a +check+ directive defined:
+
+- +check+ - returns true if the Parfait artifact is present on the current screen and false otherwise
+
+In the spirit of Parfait, this builds a secondary +present+ directive:
+
+- +present+ - returns true if the Parfait artifact is present on the current screen and false otherwise.
+
+While manually invokable, the +present+ directive for a control will also be called under the covers each time that control is used to confirm that the artifact you are acting on is still there.
+
 == How do I get started with Parfait?
 
 The code examples used below are all taken from the Parfait repository in the +examples/example1+ directory.  In this directory, we will be automating control of the +index.html+ page.
@@ -73,6 +85,14 @@ Next we should add the page to our application:
   sample_page.add_to_application("Sample App")
 
 Since our application has not yet been defined, this call will actually create the Parfait::Application object under the covers.  This may seem a bit backward, but it allows a whole bunch of Parfait Page definitions to be pre-loaded in our test suite without having to worry about passing around an Application object.  We'll be able to get an instance of this object later on in the workflow layer.
+
+We can also add a check to confirm that we are on our new page:
+
+  sample_page.add_check {
+    Parfait::browser.h1(:text => "Parfait Example Page").present?
+  }
+
+Every time we reference the page object, this condition will be tested to ensure that we are where we think we are before continuing.
 
 === Add some Controls
 
@@ -218,7 +238,9 @@ Now we can invoke directives!  With all the setup behind us, it's now pretty str
 
   app.page("Sample Page").control("Party").update "Republicrat"
 
-Note that the logging for that call indicates both what the control contained previously as well as what it has been set to.
+Note that the logging for that call indicates both what the control contained previously as well as what it has been set to.  
+
+Also, remember that under the covers, for any call taking action on +page("Sample Page")+, Parfait is using the +present+ directive to confirm that the page is still visible before continuing.
 
 Any of the directives will work on this control.  If we want to verify that it is set as we requested, we can do that as well:
 
