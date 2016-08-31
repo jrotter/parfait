@@ -12,6 +12,7 @@ module Parfait
     # +name+:: the name used to identify this control
     # +logtext+:: the text to be used when referring to this control in logs
     # +aliases+:: specifies an array of aliases for the control
+    # +parent+:: specifies the parent object (Region or Page) of this control
     #
     # *Example*
     #
@@ -23,11 +24,13 @@ module Parfait
     o = {
         :name => nil,
         :logtext => nil,
-        :aliases => []
+        :aliases => [],
+        :parent => nil
       }.merge(opts)
       @name = o[:name]
-      @aliases = o[:aliases]
       @logtext = o[:logtext]
+      @aliases = o[:aliases]
+      @parent = o[:parent]
 
       @set_method = nil
       @get_method = nil
@@ -60,6 +63,19 @@ module Parfait
           raise "Parfait::Control requires each alias in the array to be a string" unless my_alias.is_a?(String)
         end
       end
+
+      if @parent
+        if @parent.is_a? Parfait::Page
+          add_to_page(@parent)
+        else
+          if @parent.is_a? Parfait::Region
+            add_to_region(@parent)
+          else
+            raise "Parent specified for Control \"#{@name}\", but parent object type unrecognized."
+          end
+        end
+      end
+
       super
     end
 

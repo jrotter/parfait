@@ -42,6 +42,37 @@ class RegionTest < Minitest::Test
     assert parent.add_region(child).is_a?(Parfait::Region)
   end
 
+  def test_add_region_to_parent_via_constructor
+    # Parent is a Page
+    p = Parfait::Page.new(:name => "page")
+    assert (r = Parfait::Region.new(:name => "region",:parent => p)).is_a?(Parfait::Region)
+    r.add_filter { |a,b| a }
+    assert p.region("region" => "rooster") == r
+
+    # Parent is an Region
+    parent = Parfait::Region.new(:name => "parent")
+    assert (child = Parfait::Region.new(:name => "child",:parent => parent)).is_a?(Parfait::Region)
+    child.add_filter { |a,b| a }
+    assert parent.region("child" => "rooster") == child
+
+    # Parent is an Application (error expected)
+    a = Parfait::Application.new(:name => "app")
+    assert_raises(RuntimeError) {
+      r = Parfait::Region.new(:name => "region",:parent => a)
+    }
+
+    # Parent is a Control (error expected)
+    c = Parfait::Control.new(:name => "c",:logtext => "c")
+    assert_raises(RuntimeError) {
+      r = Parfait::Region.new(:name => "region",:parent => c)
+    }
+
+    # Parent is Gibberish (error expected)
+    assert_raises(RuntimeError) {
+      r = Parfait::Region.new(:name => "region",:parent => "not an object")
+    }
+  end
+
   def test_add_region_to_region_via_new_object
     parent = Parfait::Region.new(:name => "parent")
     parent.add_filter { |a,b| a }
