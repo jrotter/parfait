@@ -21,6 +21,7 @@ module Parfait
     #
     # +name+:: the name used to identify this region
     # +aliases+:: specifies an array of aliases for the region
+    # +parent+:: specifies the parent object (Region or Page) of this control
     #
     # *Example*
     #
@@ -35,20 +36,24 @@ module Parfait
     #   mypage = Parfait::Page.new(
     #     :name => "User List"
     #   )
-    #   mybrowser.add_page(mypage)
+    #   myapp.add_page(mypage)
     #   
     #   # Define the region
     #   myregion = Parfait::Region.new(
-    #     :name => "User"
+    #     :name => "User",
+    #     :parent => mypage
     #   )
     #   
     def initialize(opts = {})
       o = {
         :name => nil,
-        :aliases => []
+        :aliases => [],
+        :parent => nil
       }.merge(opts)
       @name = o[:name]
       @aliases = o[:aliases]
+      @parent = o[:parent]
+
       @controls = Hash.new
       @regions = Hash.new
       @pages = Hash.new
@@ -68,6 +73,19 @@ module Parfait
           raise "Parfait::Region requires each alias in the array to be a string" unless my_alias.is_a?(String)
         end
       end
+
+      if @parent
+        if @parent.is_a? Parfait::Page
+          add_to_page(@parent)
+        else
+          if @parent.is_a? Parfait::Region
+            add_to_region(@parent)
+          else
+            raise "Parent specified for Region \"#{@name}\", but parent object type unrecognized."
+          end
+        end
+      end
+
       super
     end
 

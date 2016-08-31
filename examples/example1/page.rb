@@ -12,10 +12,10 @@ sample_page.add_check {
 ##################################################################
 # Define the party selection control
 ##################################################################
-party = Parfait::Control.new(:name => "Party", :logtext => "political party")
-
-# Add our new control to the page
-party.add_to_page(sample_page)
+party = Parfait::Control.new(
+  :name => "Party", 
+  :logtext => "political party",
+  :parent => sample_page)
 
 # Define a "get" for the control
 party.add_get {
@@ -35,10 +35,10 @@ party.add_set { |input|
 ##################################################################
 # Define the "Set My Party" control
 ##################################################################
-set_my_party = Parfait::Control.new(:name => "Set My Party", :logtext => "Set My Party button")
-
-# Add our new control to the page
-set_my_party.add_to_page(sample_page)
+set_my_party = Parfait::Control.new(
+  :name => "Set My Party", 
+  :logtext => "Set My Party button",
+  :parent => sample_page)
 
 # Define a "goto" this control
 set_my_party.add_goto {
@@ -49,10 +49,9 @@ set_my_party.add_goto {
 ##################################################################
 # Define a Region to isolate information for a single president
 ##################################################################
-president_region = Parfait::Region.new(:name => "President")
-
-# Add this region to the page
-president_region.add_to_page(sample_page)
+president_region = Parfait::Region.new(
+  :name => "President",
+  :parent => sample_page)
 
 # Define a filter so that this region will allow focus on a single entry
 president_region.add_filter { |president_name|
@@ -69,10 +68,10 @@ president_region.add_filter { |president_name|
 ##################################################################
 # Define the nickname control
 ##################################################################
-nickname = Parfait::Control.new(:name => "Nickname", :logtext => "president nickname")
-
-# Add our new control to the region
-nickname.add_to_region(president_region)
+nickname = Parfait::Control.new(
+  :name => "Nickname", 
+  :logtext => "president nickname",
+  :parent => president_region)
 
 # Define a "get" for the control
 nickname.add_get {
@@ -88,10 +87,10 @@ nickname.add_set { |input|
 ##################################################################
 # Define the "Update Nickname" control
 ##################################################################
-update_nickname = Parfait::Control.new(:name => "Set My Party", :logtext => "Set My Party button")
-
-# Add our new control to the President region
-update_nickname.add_to_region(president_region)
+update_nickname = Parfait::Control.new(
+  :name => "Set My Party", 
+  :logtext => "Set My Party button", 
+  :parent => president_region)
 
 # Define a "goto" this control
 update_nickname.add_goto {
@@ -102,10 +101,10 @@ update_nickname.add_goto {
 ##################################################################
 # Define the "Biography" control
 ##################################################################
-biography = Parfait::Control.new(:name => "Biography", :logtext => "Biography link")
-
-# Add our new control to the President region
-biography.add_to_region(president_region)
+biography = Parfait::Control.new(
+  :name => "Biography", 
+  :logtext => "Biography link",
+  :parent => president_region)
 
 # Define a "goto" this control
 biography.add_goto {
@@ -117,18 +116,14 @@ biography.add_goto {
 ##################################################################
 # Define the "Cabinet" control
 ##################################################################
-cabinet = Parfait::Control.new(:name => "Cabinet", :logtext => "Cabinet link")
-
-# Add our new control to the President region
-cabinet.add_to_region(president_region)
+cabinet = Parfait::Control.new(
+  :name => "Cabinet", 
+  :logtext => "Cabinet link", 
+  :parent => president_region)
 
 # Define a "goto" this control
 cabinet.add_goto {
   Parfait::browser.link(:text => "Cabinet").click
 }
-
-
-
-
 
 

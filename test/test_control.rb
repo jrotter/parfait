@@ -33,18 +33,53 @@ class ControlTest < Minitest::Test
     }
   end
 
-  def test_add_control_to_page_via_self
+  def test_add_control_to_parent_via_self
+    # Parent is a Page
     p = Parfait::Page.new(:name => "page")
     c = Parfait::Control.new(:name => "c",:logtext => "d")
     assert c.add_to_page(p).is_a?(Parfait::Control)
     assert p.control("c") == c
-  end
 
-  def test_add_control_to_region_via_self
+    # Parent is a Region
     r = Parfait::Region.new(:name => "region")
     c = Parfait::Control.new(:name => "c",:logtext => "d")
     assert c.add_to_region(r).is_a?(Parfait::Control)
     assert r.control("c") == c
+  end
+
+  def test_add_control_to_parent_via_constructor
+    # Parent is a Page
+    p = Parfait::Page.new(:name => "page")
+    assert (c = Parfait::Control.new(:name => "c",:logtext => "d",:parent => p)).is_a?(Parfait::Control)
+    assert p.control("c") == c
+
+    # Parent is a Region
+    r = Parfait::Region.new(:name => "region")
+    assert (c = Parfait::Control.new(:name => "c",:logtext => "d",:parent => r)).is_a?(Parfait::Control)
+    assert r.control("c") == c
+
+    # Parent is an Application (error expected)
+    a = Parfait::Application.new(:name => "app")
+    assert_raises(RuntimeError) {
+      c = Parfait::Control.new(:name => "c",:logtext => "d",:parent => a)
+    }
+
+    # Parent is a Control (error expected)
+    d = Parfait::Control.new(:name => "d",:logtext => "d")
+    assert_raises(RuntimeError) {
+      c = Parfait::Control.new(:name => "c",:logtext => "d",:parent => d)
+    }
+
+    # Parent is Gibberish (error expected)
+    assert_raises(RuntimeError) {
+      c = Parfait::Control.new(:name => "c",:logtext => "d",:parent => "not an object")
+    }
+  end
+
+  def test_add_control_to_page_via_constructor
+    p = Parfait::Page.new(:name => "page")
+    c = Parfait::Control.new(:name => "c",:logtext => "d",:parent => p)
+    assert p.control("c") == c
   end
 
   def test_parfait_generic_directives_input
