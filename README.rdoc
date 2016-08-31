@@ -98,13 +98,12 @@ Every time we reference the page object, this condition will be tested to ensure
 
 Our sample web page starts with a set of radio buttons.  A data control like this can be defined in three steps.
 
-First, we create a Control object:
+First, we create a Control object on our Page:
 
-  party = Parfait::Control.new(:name => "Party", :logtext => "political party")
-
-Next, we add this object to the Page:
-
-  party.add_to_page(sample_page)
+  party = Parfait::Control.new(
+    :name => "Party", 
+    :logtext => "political party"
+    :parent => sample_page)
 
 Then we define +get+ and +set+ directives for the control.  For the +get+, no parameters are necessary and the code passed in should return the value of the control:
 
@@ -126,9 +125,10 @@ Now that the +get+ and +set+ directives are defined for this control, Parfait wi
 
 We also have a "Set My Party" button to add as a non-data Control.  Let's add that to our Page definition as well.  The difference with the non-data Control is that the only directive we set here is the +goto+ method:
 
-  set_my_party = Parfait::Control.new(:name => "Set My Party", :logtext => "Set My Party button")
-  
-  set_my_party.add_to_page(sample_page)
+  set_my_party = Parfait::Control.new(
+    :name => "Set My Party", 
+    :logtext => "Set My Party button"
+    :parent => sample_page)
   
   set_my_party.add_goto {
     Parfait::browser.button(:value => "Set My Party").click
@@ -142,8 +142,9 @@ When automating web pages, we often have to deal with repeated elements that are
 
 We will define a Region to isolate information for a single president.  This wil allow us to easily get at the fields for that president with subsequent control definitions for that region.  First we can define the Region and add it to the Page.
 
-  president_region = Parfait::Region.new(:name => "President")
-  president_region.add_to_page(sample_page)
+  president_region = Parfait::Region.new(
+    :name => "President", 
+    :parent => sample_page)
 
 The key piece in defining the region is the filter, which reduces the scope Watir is looking at by starting with +Parfait::browser+, applying the filter and then calling +Parfait::filter_browser+ to store the reduced scope. 
 
@@ -162,8 +163,10 @@ The add_filter method will take a single parameter - if more are necessary, then
 
 With this filter defined, we can access the controls under each president much more easily.  Let's start with the nickname control:
 
-  nickname = Parfait::Control.new(:name => "Nickname", :logtext => "president nickname")
-  nickname.add_to_region(president_region)
+  nickname = Parfait::Control.new(
+    :name => "Nickname", 
+    :logtext => "president nickname", 
+    :parent => president_region)
 
   nickname.add_get {
     Parfait::browser.text_field.value
@@ -177,9 +180,10 @@ Note that the +get+ and the +set+ rely on inheriting the filtered browser from t
 
 Similarly, the "Update Nickname" control can be defined:
 
-  update_nickname = Parfait::Control.new(:name => "Set My Party", :logtext => "Set My Party button")
-  
-  update_nickname.add_to_region(president_region)
+  update_nickname = Parfait::Control.new(
+    :name => "Set My Party", 
+    :logtext => "Set My Party button", 
+    :parent => president_region)
   
   update_nickname.add_goto {
     Parfait::browser.button(:value => "Update").click
@@ -187,18 +191,20 @@ Similarly, the "Update Nickname" control can be defined:
 
 Finally, we can define the remaining two controls as well:
 
-  biography = Parfait::Control.new(:name => "Biography", :logtext => "Biography link")
-  
-  biography.add_to_region(president_region)
+  biography = Parfait::Control.new(
+    :name => "Biography", 
+    :logtext => "Biography link", 
+    :parent => president_region)
   
   biography.add_goto {
     Parfait::browser.link(:text => "Biography").click
   }
   
   
-  cabinet = Parfait::Control.new(:name => "Cabinet", :logtext => "Cabinet link")
-  
-  cabinet.add_to_region(president_region)
+  cabinet = Parfait::Control.new(
+    :name => "Cabinet", 
+    :logtext => "Cabinet link", 
+    :parent => president_region)
   
   cabinet.add_goto {
     Parfait::browser.link(:text => "Cabinet").click

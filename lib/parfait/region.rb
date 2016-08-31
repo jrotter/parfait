@@ -21,6 +21,7 @@ module Parfait
     #
     # +name+:: the name used to identify this region
     # +aliases+:: specifies an array of aliases for the region
+    # +parent+:: specifies the parent object (Region or Page) of this control
     #
     # *Example*
     #
@@ -35,11 +36,12 @@ module Parfait
     #   mypage = Parfait::Page.new(
     #     :name => "User List"
     #   )
-    #   mybrowser.add_page(mypage)
+    #   myapp.add_page(mypage)
     #   
     #   # Define the region
     #   myregion = Parfait::Region.new(
-    #     :name => "User"
+    #     :name => "User",
+    #     :parent => mypage
     #   )
     #   
     def initialize(opts = {})
