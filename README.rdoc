@@ -1,14 +1,14 @@
 = Parfait
 == What is Parfait?
 
-Parfait uses layers to simplify the creation and maintenance of your automated browser test suite.  
+Parfait uses layers to simplify the creation and maintenance of your web browser test automation.  
 
 A typical automated test suite can be broken down into layers:
 
 * A <b>workflow layer</b> on top, which dictates the user's path through the application.  Think in terms of verbs and user stories: "As a user, when I login, I expect to be taken to my home page."  The workflow layer cares about user actions and results, not about the mechanics of entering data into the browser.
 * A <b>control layer</b> beneath, which defines the specific interactions between the user and the web page.  This control layer would be implemented in your favorite browser automation tool, e.g. Selenium, Watir, etc.  The control layer cares only about getting data into and out of specific fields on specific pages.
 
-Parfait provides a layer between the two, offering a set of basic test directives which are easy to call by the workflow layer and providing a simple infrastructure for creation and maintenance of the control layer beneath.  
+Parfait allows for easy separation of the workflow and control layers by sitting between them.  At the control layer, it provides a simple infrastructure for creation and maintenance of web controls.  At the workflow layer, it provides a set of basic test directives, allowing for easier manipulation of data without having to worry about the details of the underlying web page.
 
 == How does Parfait work?
 
@@ -67,6 +67,12 @@ In the spirit of Parfait, this builds a secondary +present+ directive:
 - +present+ - returns true if the Parfait artifact is present on the current screen and false otherwise.
 
 While manually invokable, the +present+ directive for a control will also be called under the covers each time that control is used to confirm that the artifact you are acting on is still there.
+
+== How do I install Parfait?
+
+Install the Parfait gem from the command line as follows:
+
+  $ gem install parfait
 
 == How do I get started with Parfait?
 

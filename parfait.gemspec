@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
   s.name        = 'parfait'
-  s.version     = '0.12.0'
+  s.version     = '0.12.1'
   s.date        = '2016-08-31'
   s.summary     = 'Parfait'
-  s.description = 'A base set of test operations for verification of web pages and the controls therein'
+  s.description = 'Parfait uses layers to simplify the creation and maintenance of your web browser test automation.'
   s.add_development_dependency "minitest", [">= 0"]
   s.authors     = ["Jeremy Rotter"]
   s.email       = 'jeremy.rotter@gmail.com'
