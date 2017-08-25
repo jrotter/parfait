@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'parfait'
-  s.version     = '0.12.3'
+  s.version     = '0.12.4'
   s.date        = '2017-08-25'
   s.summary     = 'Parfait'
   s.description = 'Parfait uses layers to simplify the creation and maintenance of your web browser test automation.'

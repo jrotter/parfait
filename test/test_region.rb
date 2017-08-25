@@ -115,14 +115,26 @@ class RegionTest < Minitest::Test
 
   def test_filter_flexibility
     p = Parfait::Page.new(:name => "page")
-    r1 = Parfait::Region.new(:name => "region1")
-    r1.add_filter { |a| a }
-    assert r1.add_to_page(p).is_a?(Parfait::Region)
+    x = "cat"
+    r1 = Parfait::Region.new(:name => "region1", :parent => p)
+    r1.add_filter { |a| x = "dog" }
     assert p.region("region1") == r1
-    r2 = Parfait::Region.new(:name => "region2")
-    r2.add_filter { true }
-    assert r2.add_to_page(p).is_a?(Parfait::Region)
+    assert x == "dog"
+
+    r2 = Parfait::Region.new(:name => "region2", :parent => p)
+    r2.add_filter { x = "bird" }
     assert p.region("region2") == r2
+    assert x == "bird"
+
+    r3 = Parfait::Region.new(:name => "region3", :parent => r1)
+    r3.add_filter { |a| x = "cow" }
+    assert p.region("region1").region("region3") == r3
+    assert x == "cow"
+
+    r4 = Parfait::Region.new(:name => "region4", :parent => r1)
+    r4.add_filter { x = "pig" }
+    assert p.region("region1").region("region4") == r4
+    assert x == "pig"
   end
 
 end

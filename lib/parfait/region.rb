@@ -259,21 +259,33 @@ module Parfait
     #
     # *Options*
     #
-    # +name+:: specifies the name or alias of the region
+    # +opts+:: is either a hash with a key specifying the name of the region and a value
+    # specifying the filter search value OR is a value specifying the name of the region
     #
     # *Example*
     #
     #   myregion.region("User List" => username)
+    #   myregion.region("Chat Box")
     #
     def region(opts = {})
-      region = @regions[opts.first[0]] 
+      if opts.is_a?(Hash)
+        region_name = opts.first[0]
+      else
+        region_name = opts
+      end
+      region = @regions[region_name]
+
       if region
 
-        # Confirm that we are in the expected region
-        verify_presence "Cannot navigate to region \"#{opts.first[0]}\" because region presence check failed"
+        # Confirm that we are on the expected page
+        verify_presence "Cannot navigate to region \"#{region_name}\" because region presence check failed"
 
         # Apply the filter method
-        region.filter(opts.first[1])
+        if opts.is_a?(Hash)
+          region.filter(opts.first[1])
+        else
+          region.filter(opts)
+        end
 
         return region
       else
