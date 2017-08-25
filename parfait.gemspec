@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'parfait'
-  s.version     = '0.12.2'
-  s.date        = '2017-01-07'
+  s.version     = '0.12.3'
+  s.date        = '2017-08-25'
   s.summary     = 'Parfait'
   s.description = 'Parfait uses layers to simplify the creation and maintenance of your web browser test automation.'
   s.add_development_dependency "minitest", [">= 0"]
