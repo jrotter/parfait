@@ -113,4 +113,16 @@ class RegionTest < Minitest::Test
     assert_raises(RuntimeError) { r.add_region(c) }
   end
 
+  def test_filter_flexibility
+    p = Parfait::Page.new(:name => "page")
+    r1 = Parfait::Region.new(:name => "region1")
+    r1.add_filter { |a| a }
+    assert r1.add_to_page(p).is_a?(Parfait::Region)
+    assert p.region("region1") == r1
+    r2 = Parfait::Region.new(:name => "region2")
+    r2.add_filter { true }
+    assert r2.add_to_page(p).is_a?(Parfait::Region)
+    assert p.region("region2") == r2
+  end
+
 end

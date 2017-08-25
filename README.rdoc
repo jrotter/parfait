@@ -154,7 +154,7 @@ We will define a Region to isolate information for a single president.  This wil
 
 The key piece in defining the region is the filter, which reduces the scope Watir is looking at by starting with +Parfait::browser+, applying the filter and then calling +Parfait::filter_browser+ to store the reduced scope. 
 
-The add_filter method will take a single parameter - if more are necessary, then a subfilter should be used instead.
+To filter based on an input, the add_filter method should take a single parameter - if more are necessary, then a subfilter should be used instead.  To filter without an input, the add_filter method can be written with no parameters.
   
   # Define a filter so that this region will allow focus on a single entry
   president_region.add_filter { |president_name|
@@ -265,6 +265,8 @@ We can submit our change using the "Set My Party" button:
 Using the Region we defined, we can also easily manipulate controls within the table.  To change the nickname for John Adams, we can just target his table entry like this:
 
   app.page("Sample Page").region("President" => "John Adams").control("Nickname").update "Sammy's Bro"
+
+Note that if the filter for this region were written without need for a parameter, the +region()+ call would take only the name of the Region instead of a Hash.
 
 Similarly, we can verify his nickname:
 
