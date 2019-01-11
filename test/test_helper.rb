@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'watir'
 require 'parfait'
 
 module Watir
