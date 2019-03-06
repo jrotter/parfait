@@ -10,17 +10,6 @@ class ApplicationTest < Minitest::Test
     assert myapp.is_a? Parfait::Application
   end
 
-  def test_application_initialize_bad_browser
-    n = "not a browser"
-    assert_raises(RuntimeError) { 
-      myapp = Parfait::Application.new(:name => "a",:browser => n)
-    }
-    myapp = Parfait::Application.new(:name => "a")
-    assert_raises(RuntimeError) { 
-      myapp.set_browser(n)
-    }
-  end
-
   def test_application_initialize_no_name
     # No name
     b = Watir::Browser.new

@@ -66,10 +66,6 @@ module Parfait
     # 
     def set_browser(browser)
       Thread.current[:parfait_browser] = browser 
-      unless Thread.current[:parfait_browser] == nil or 
-             Thread.current[:parfait_browser].is_a?(Watir::Browser)
-        raise "Parfait browser parameter must be a Watir Browser object"
-      end
     end
 
   

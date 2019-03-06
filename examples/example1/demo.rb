@@ -1,4 +1,4 @@
-require 'watir-webdriver'
+require 'watir'
 require 'parfait'
 
 # Load in the page definition

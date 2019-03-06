@@ -1,4 +1,3 @@
-require 'watir-webdriver'
 require 'parfait/artifact'
 require 'parfait/application'
 require 'parfait/page'
